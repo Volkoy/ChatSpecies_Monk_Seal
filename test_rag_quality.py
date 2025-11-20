@@ -1,8 +1,8 @@
 """
-RAG 质量测试脚本
-验证向量化结果和检索性能
+RAG Quality Testing Script
+Validating Vectorization Results and Retrieval Performance
 
-使用方法:
+Usage:
     python test_rag_quality.py
 """
 
@@ -11,38 +11,38 @@ import time
 from dotenv import load_dotenv
 from rag_utils import get_rag_instance
 
-# 加载环境变量
+# Load Environment Variables
 load_dotenv()
 
 def test_vectordb_stats():
-    """测试向量库统计信息"""
+    """Test Vector Library Statistics"""
     print("=" * 60)
-    print("📊 向量库统计信息")
+    print("📊 Vector Library Statistics")
     print("=" * 60)
     
     api_key = os.getenv("DASHSCOPE_API_KEY")
     if not api_key:
-        print("❌ 错误: 未找到 DASHSCOPE_API_KEY")
+        print("❌ Error: Not foundDASHSCOPE_API_KEY")
         return
     
     rag = get_rag_instance("db5_qwen", api_key)
     stats = rag.get_stats()
     
-    print(f"\n✅ 向量库路径: {stats['persist_directory']}")
-    print(f"✅ 嵌入模型: {stats['embedding_model']}")
-    print(f"✅ 文档数量: {stats['total_documents']}")
+    print(f"\n✅ Vector Library Path: {stats['persist_directory']}")
+    print(f"✅ Embedded Model: {stats['embedding_model']}")
+    print(f"✅ Number of documents: {stats['total_documents']}")
     print()
 
 def test_retrieval_quality(lambda_mult=0.3):
-    """测试检索质量 - 基础场景"""
+    """Testing Retrieval Quality - Basic Scenario"""
     print("=" * 60)
-    print(f"🧪 检索质量测试 - 基础场景 (lambda_mult={lambda_mult})")
+    print(f"🧪 Search Quality Testing - Basic Scenarios (lambda_mult={lambda_mult})")
     print("=" * 60)
     
     api_key = os.getenv("DASHSCOPE_API_KEY")
     rag = get_rag_instance("db5_qwen", api_key)
     
-    # 测试查询列表
+    # Test Query List
     test_queries = [
         {
             "query": "What is Zino's Petrel?",
@@ -63,61 +63,61 @@ def test_retrieval_quality(lambda_mult=0.3):
     
     for i, test in enumerate(test_queries, 1):
         print(f"\n{'=' * 60}")
-        print(f"测试 {i}: {test['complexity'].upper()} 查询")
+        print(f"Test {i}: {test['complexity'].upper()} 查询")
         print(f"{'=' * 60}")
-        print(f"📝 查询: '{test['query']}'")
-        print(f"🎯 预期关键词: {', '.join(test['expected_keywords'])}")
+        print(f"📝 Qurey: '{test['query']}'")
+        print(f"🎯 Expected Key Words: {', '.join(test['expected_keywords'])}")
         
-        # 计时
+        # Time Count
         start_time = time.time()
         docs = rag.retrieve(test['query'], lambda_mult=lambda_mult)
         elapsed_time = time.time() - start_time
         
-        print(f"\n⏱️  检索耗时: {elapsed_time:.3f} 秒")
-        print(f"📄 返回文档数: {len(docs)}")
+        print(f"\n⏱️  Search time: {elapsed_time:.3f} Second")
+        print(f"📄 Number of documents returned: {len(docs)}")
         
-        # 检查关键词覆盖
+        # Check keyword coverage
         all_content = " ".join([doc.page_content.lower() for doc in docs])
         found_keywords = [kw for kw in test['expected_keywords'] if kw.lower() in all_content]
         coverage = len(found_keywords) / len(test['expected_keywords']) * 100
         
-        print(f"✅ 关键词覆盖率: {coverage:.1f}% ({len(found_keywords)}/{len(test['expected_keywords'])})")
-        print(f"   找到: {', '.join(found_keywords) if found_keywords else '无'}")
+        print(f"✅ Keyword Coverage Rate: {coverage:.1f}% ({len(found_keywords)}/{len(test['expected_keywords'])})")
+        print(f"   Find: {', '.join(found_keywords) if found_keywords else '无'}")
         
-        # 显示文档来源
-        print(f"\n📚 文档来源:")
+        # Show document source
+        print(f"\n📚 Document Source:")
         for j, doc in enumerate(docs, 1):
             source = doc.metadata.get('source_file', 'Unknown')
             page = doc.metadata.get('page', 'N/A')
             preview = doc.page_content[:100].replace('\n', ' ')
-            print(f"   {j}. {source} (页 {page})")
-            print(f"      预览: {preview}...")
+            print(f"   {j}. {source} (Page {page})")
+            print(f"      Preview: {preview}...")
         
-        # 质量评估
+        # Quality Assessment
         if coverage >= 75:
-            print(f"\n✅ 质量评估: 优秀（覆盖率 ≥75%）")
+            print(f"\n✅ Quality Assessment: Excellent (Coverage ≥75%)")
         elif coverage >= 50:
-            print(f"\n⚠️  质量评估: 良好（覆盖率 ≥50%）")
+            print(f"\n⚠️  Quality Assessment: Good (Coverage ≥50%)")
         else:
-            print(f"\n❌ 质量评估: 需改进（覆盖率 <50%）")
+            print(f"\n❌ Quality Assessment: Needs improvement (coverage <50%)")
 
 def test_user_scenarios(lambda_mult=0.3):
-    """测试用户实际场景"""
+    """Testing user scenarios in real-world conditions"""
     print("\n" + "=" * 60)
-    print(f"👥 用户实际场景测试 (lambda_mult={lambda_mult})")
+    print(f"👥 User Scenario Testing  (lambda_mult={lambda_mult})")
     print("=" * 60)
-    print("模拟真实用户对话，测试 RAG 系统的实际表现")
+    print("Simulate real user conversations to evaluate the actual performance of RAG systems.")
     print()
     
     api_key = os.getenv("DASHSCOPE_API_KEY")
     rag = get_rag_instance("db5_qwen", api_key)
     
-    # 用户实际测试问题
+    # User Actual Test Issues
     user_tests = [
         {
             "id": 1,
             "query": "Hi, how are you doing today?",
-            "category": "问候",
+            "category": "Greetings",
             "expected_keywords": ["petrel", "bird", "fine", "good"],
             "expected_sticker": None,
             "expected_score_change": "+1 (empathy)"
@@ -125,7 +125,7 @@ def test_user_scenarios(lambda_mult=0.3):
         {
             "id": 2,
             "query": "Where do you usually have your nesting areas?",
-            "category": "栖息地",
+            "category": "Habitat",
             "expected_keywords": ["nest", "Madeira", "mountains", "cliffs", "caves"],
             "expected_sticker": "🏡 Home",
             "expected_score_change": "+1 (knowledge)"
@@ -133,7 +133,7 @@ def test_user_scenarios(lambda_mult=0.3):
         {
             "id": 3,
             "query": "How long do you live approximately?",
-            "category": "寿命",
+            "category": "Lifespan",
             "expected_keywords": ["years", "lifespan", "live", "age"],
             "expected_sticker": None,
             "expected_score_change": "+1 (deep_interaction)"
@@ -141,31 +141,31 @@ def test_user_scenarios(lambda_mult=0.3):
         {
             "id": 4,
             "query": "Why do you need to abort sometimes to protect your species, that's a very sad thing and I don't quite understand how does it help you",
-            "category": "保护策略",
+            "category": "Protection Strategy",
             "expected_keywords": ["conservation", "protection", "breeding", "survival", "predators"],
-            "expected_sticker": "🌱 Helper (可能)",
+            "expected_sticker": "🌱 Helper (Maybe)",
             "expected_score_change": "+1 (conservation_action/empathy)"
         },
         {
             "id": 5,
             "query": "How long do you sleep?",
-            "category": "日常习惯",
+            "category": "Daily Habits",
             "expected_keywords": ["sleep", "rest", "night", "day", "active"],
-            "expected_sticker": "🌙 Routine (可能)",
+            "expected_sticker": "🌙 Routine (Maybe)",
             "expected_score_change": "+1 (knowledge)"
         },
         {
             "id": 6,
             "query": "How do I find you?",
-            "category": "观察指南",
+            "category": "Observation Guide",
             "expected_keywords": ["Madeira", "mountains", "sea", "observation", "location"],
-            "expected_sticker": "🏡 Home (如未触发)",
+            "expected_sticker": "🏡 Home (If not triggered)",
             "expected_score_change": "+1 (personal_engagement)"
         },
         {
             "id": 7,
             "query": "Do you have a friend?",
-            "category": "社交",
+            "category": "Social",
             "expected_keywords": ["mate", "colony", "pair", "social", "alone"],
             "expected_sticker": None,
             "expected_score_change": "+1 (personal_engagement)"
@@ -173,7 +173,7 @@ def test_user_scenarios(lambda_mult=0.3):
         {
             "id": 8,
             "query": "What do you eat for food and how do you catch it?",
-            "category": "饮食",
+            "category": "Diet",
             "expected_keywords": ["fish", "squid", "food", "catch", "hunt", "sea"],
             "expected_sticker": "🍽️ Food",
             "expected_score_change": "+1 (knowledge)"
@@ -181,7 +181,7 @@ def test_user_scenarios(lambda_mult=0.3):
         {
             "id": 9,
             "query": "How can I help you and your species thrive?",
-            "category": "保护行动",
+            "category": "Protection Action",
             "expected_keywords": ["help", "protect", "conservation", "support", "habitat"],
             "expected_sticker": "🌱 Helper",
             "expected_score_change": "+1 (conservation_action)"
@@ -193,123 +193,123 @@ def test_user_scenarios(lambda_mult=0.3):
     
     for test in user_tests:
         print(f"\n{'=' * 60}")
-        print(f"测试 {test['id']}: {test['category']} - {test['expected_sticker'] or '无贴纸'}")
+        print(f"Test {test['id']}: {test['category']} - {test['expected_sticker'] or 'None Stickers'}")
         print(f"{'=' * 60}")
-        print(f"📝 问题: '{test['query']}'")
-        print(f"🎯 预期关键词: {', '.join(test['expected_keywords'])}")
-        print(f"🎁 预期贴纸: {test['expected_sticker'] or '无'}")
-        print(f"❤️  预期评分: {test['expected_score_change']}")
+        print(f"📝 Question: '{test['query']}'")
+        print(f"🎯 Expected Keywords: {', '.join(test['expected_keywords'])}")
+        print(f"🎁 Expected Stickers: {test['expected_sticker'] or 'None'}")
+        print(f"❤️ Expected Score Change: {test['expected_score_change']}")
         
-        # 计时
+        # Time Count
         start_time = time.time()
         docs = rag.retrieve(test['query'], lambda_mult=lambda_mult)
         elapsed_time = time.time() - start_time
         
-        print(f"\n⏱️  检索耗时: {elapsed_time:.3f} 秒")
-        print(f"📄 返回文档数: {len(docs)}")
+        print(f"\n⏱️  Search time: {elapsed_time:.3f} Second")
+        print(f"📄 Number of documents returned: {len(docs)}")
         
-        # 检查关键词覆盖
+        # Check keyword coverage
         all_content = " ".join([doc.page_content.lower() for doc in docs])
         found_keywords = [kw for kw in test['expected_keywords'] if kw.lower() in all_content]
         coverage = len(found_keywords) / len(test['expected_keywords']) * 100 if test['expected_keywords'] else 0
         total_coverage += coverage
         
-        print(f"✅ 关键词覆盖率: {coverage:.1f}% ({len(found_keywords)}/{len(test['expected_keywords'])})")
+        print(f"✅ Keyword Coverage Rate: {coverage:.1f}% ({len(found_keywords)}/{len(test['expected_keywords'])})")
         if found_keywords:
-            print(f"   找到: {', '.join(found_keywords)}")
+            print(f"   Find: {', '.join(found_keywords)}")
         else:
-            print(f"   找到: 无")
+            print(f"   Find: None")
         
-        # 显示文档来源（最多显示 2 个）
-        print(f"\n📚 文档来源:")
+        # Show document sources (display up to 2)
+        print(f"\n📚 Document Source:")
         for i, doc in enumerate(docs[:2], 1):
             source = doc.metadata.get('source_file', 'Unknown')
             page = doc.metadata.get('page', 'N/A')
             preview = doc.page_content[:80].replace('\n', ' ')
-            print(f"   {i}. {source} (页 {page})")
-            print(f"      预览: {preview}...")
+            print(f"   {i}. {source} (Page {page})")
+            print(f"      Preview: {preview}...")
         
-        # 质量评估
+        # Quality Assessment
         if coverage >= 60:
-            print(f"\n✅ 检索质量: 优秀（覆盖率 ≥60%）")
+            print(f"\n✅ Search Quality: Excellent (Coverage ≥60%)")
             successful_tests += 1
         elif coverage >= 40:
-            print(f"\n⚠️  检索质量: 良好（覆盖率 ≥40%）")
+            print(f"\n⚠️  Search Quality: Good (Coverage ≥40%)")
             successful_tests += 1
         else:
-            print(f"\n❌ 检索质量: 需改进（覆盖率 <40%）")
+            print(f"\n❌ Search Quality: Needs improvement (coverage <40%)")
     
-    # 总结
+    # Summary
     print(f"\n{'=' * 60}")
-    print(f"📊 测试总结")
+    print(f"📊 Test Summary")
     print(f"{'=' * 60}")
-    print(f"✅ 成功测试: {successful_tests}/{len(user_tests)} ({successful_tests/len(user_tests)*100:.1f}%)")
-    print(f"📈 平均关键词覆盖率: {total_coverage/len(user_tests):.1f}%")
+    print(f"✅ Successful Test: {successful_tests}/{len(user_tests)} ({successful_tests/len(user_tests)*100:.1f}%)")
+    print(f"📈 Average Keyword Coverage Rate: {total_coverage/len(user_tests):.1f}%")
     
     if successful_tests >= 7:
-        print(f"\n🎉 整体评估: 优秀！RAG 系统表现出色")
+        print(f"\n🎉 Overall Assessment: Excellent! The RAG system performed exceptionally well.")
     elif successful_tests >= 5:
-        print(f"\n👍 整体评估: 良好，基本满足需求")
+        print(f"\n👍 Overall Assessment: Good, generally meets requirements")
     else:
-        print(f"\n⚠️  整体评估: 需要优化，建议调整检索参数")
+        print(f"\n⚠️  Overall assessment: Optimization is required; it is recommended to adjust the search parameters.")
 
 def test_performance():
-    """测试性能（缓存效果）"""
+    """Test performance (cache effect)"""
     print("\n" + "=" * 60)
-    print("⚡ 性能测试（缓存效果）")
+    print("⚡ Performance Test (Cache Effect)")
     print("=" * 60)
     
     api_key = os.getenv("DASHSCOPE_API_KEY")
     test_query = "What is Zino's Petrel?"
     
-    # 首次查询（冷启动）
-    print(f"\n🔵 首次查询（冷启动）...")
+    # First query (cold start)
+    print(f"\n🔵 First Query (Cold Start)...")
     start_time = time.time()
     rag1 = get_rag_instance("db6_qwen", api_key)
     docs1 = rag1.retrieve(test_query)
     cold_time = time.time() - start_time
-    print(f"   ⏱️  耗时: {cold_time:.3f} 秒")
+    print(f"   ⏱️  Time taken: {cold_time:.3f} seconds")
     
-    # 第二次查询（缓存命中）
-    print(f"\n🟢 第二次查询（缓存命中）...")
+    # Second query (cache hit)
+    print(f"\n🟢 Second Query (Cache Hit)...")
     start_time = time.time()
     rag2 = get_rag_instance("db5_qwen", api_key)
     docs2 = rag2.retrieve(test_query)
     hot_time = time.time() - start_time
-    print(f"   ⏱️  耗时: {hot_time:.3f} 秒")
+    print(f"   ⏱️  Time taken: {hot_time:.3f} seconds")
     
-    # 性能提升
+    # Performance improvement
     speedup = cold_time / hot_time if hot_time > 0 else float('inf')
-    print(f"\n📊 性能提升: {speedup:.1f}x")
-    print(f"   🔹 冷启动: {cold_time:.3f} 秒")
-    print(f"   🔹 缓存命中: {hot_time:.3f} 秒")
+    print(f"\n📊 Performance Improvement: {speedup:.1f}x")
+    print(f"   🔹 Cold Start: {cold_time:.3f} seconds")
+    print(f"   🔹 Cache Hit: {hot_time:.3f} seconds")
 
 def main():
-    """主函数"""
+    """Main function"""
     print("\n" + "=" * 60)
-    print("🧪 RAG 质量测试套件")
+    print("🧪 RAG Quality Test Suite")
     print("=" * 60)
     print()
     
-    # 1. 统计信息
+    # 1. Statistics
     test_vectordb_stats()
     
-    # 2. 基础检索质量测试
+    # 2. Basic retrieval quality test
     test_retrieval_quality()
     
-    # 3. 用户实际场景测试（新增）
+    # 3. User real-world scenario test (newly added)
     test_user_scenarios()
     
-    # 4. 性能测试
+    # 4. Performance test
     test_performance()
     
     print("\n" + "=" * 60)
-    print("✅ 测试完成!")
+    print("✅ Test Completed!")
     print("=" * 60)
-    print("\n💡 提示:")
-    print("   - 如果关键词覆盖率 <40%，建议调整 lambda_mult 参数")
-    print("   - 如果检索速度 >3秒，检查网络连接或 API 配额")
-    print("   - 运行 'streamlit run main.py' 进行实际测试")
+    print("\n💡 Tips:")
+    print("   - If keyword coverage <40%, consider adjusting lambda_mult parameter")
+    print("   - If retrieval speed >3 seconds, check network connection or API quota")
+    print("   - Run 'streamlit run main.py' for actual testing")
     print()
 
 if __name__ == "__main__":

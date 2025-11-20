@@ -1,6 +1,6 @@
 """
-Fact-Check 工具 - 智能摘要和验证
-结合知识库检索和可选的网络搜索，生成总结性文本
+Fact-Check Tool - Intelligent Summarization and Verification
+Generates summary text by combining knowledge base retrieval with optional web searches.
 """
 
 import os
@@ -52,23 +52,23 @@ def get_friendly_filename(source_file):
 
 def summarize_fact_check(question, retrieved_docs, ai_answer, language="English"):
     """
-    对 Fact-Check 内容进行智能摘要
+    Intelligent Summarization of Fact-Checked Content
     
     Args:
-        question: 用户问题
-        retrieved_docs: 检索到的文档列表
-        ai_answer: AI 的回答
-        language: 语言（English/Portuguese）
+        question: User query
+        retrieved_docs: List of retrieved documents
+        ai_answer: AI response
+        language: Language (English/Portuguese)
     
     Returns:
-        str: 总结性文本
+        str: Summary text
     """
-    # 提取文档内容
+    # Extract document content
     doc_contents = []
     sources = []
     
-    for i, doc in enumerate(retrieved_docs[:3], 1):  # 最多使用3个文档
-        content = doc.page_content[:500]  # 每个文档最多500字符
+    for i, doc in enumerate(retrieved_docs[:3], 1):  # Use a maximum of 3 documents
+        content = doc.page_content[:500]  # Each document is limited to 500 characters.
         source = doc.metadata.get('source_file', 'Unknown')
         page = doc.metadata.get('page', 'N/A')
 
@@ -79,7 +79,7 @@ def summarize_fact_check(question, retrieved_docs, ai_answer, language="English"
     
     combined_docs = "\n\n".join(doc_contents)
     
-    # 构建摘要 Prompt
+    # Prompt for Building Abstracts
     if language == "Portuguese":
         prompt = f"""
         Tu és um verificador de factos científico. Com base nos documentos fornecidos, cria um resumo claro e conciso.
@@ -121,18 +121,18 @@ def summarize_fact_check(question, retrieved_docs, ai_answer, language="English"
         **Factual Summary:**
         """
     
-    # 使用 Qwen LLM 生成摘要
+    # Generate summaries using Qwen LLM
     try:
         api_key = os.getenv("DASHSCOPE_API_KEY")
         llm = Tongyi(
             model_name=os.getenv("QWEN_MODEL_NAME", "qwen-turbo"),
-            temperature=0.3,  # 较低温度，确保事实性
+            temperature=0.3,  # Lower temperatures ensure factual accuracy.
             dashscope_api_key=api_key
         )
         
         summary = llm.invoke(prompt)
         
-        # 添加来源引用
+        # Add source citation
         if language == "Portuguese":
             source_text = f"\n\n📚 **Fontes:** {', '.join(sources)}"
         else:
@@ -141,8 +141,8 @@ def summarize_fact_check(question, retrieved_docs, ai_answer, language="English"
         return summary.strip() + source_text
     
     except Exception as e:
-        print(f"[Fact-Check] 摘要生成失败: {str(e)}")
-        # 降级：返回简化的文档内容
+        print(f"[Fact-Check] Abstract generation failed: {str(e)}")
+        # Downgrade: Return simplified document content
         source = retrieved_docs[0].metadata.get('source_file', 'Unknown')
         page = retrieved_docs[0].metadata.get('page', 'N/A')
         friendly_name = get_friendly_filename(source)
@@ -155,20 +155,20 @@ def summarize_fact_check(question, retrieved_docs, ai_answer, language="English"
 
 def optimize_search_query(question, retrieved_docs):
     """
-    基于用户问题和 RAG 检索内容优化搜索查询
+    Optimize Search Queries Based on User Questions and RAG-Retrieved Content
     
     Args:
-        question: 用户原始问题
-        retrieved_docs: RAG 检索到的文档
+        question: User's original question
+        retrieved_docs: Documents retrieved by RAG
     
     Returns:
-        str: 优化后的搜索查询
+        str: Optimized search query
     """
-    # 从 RAG 文档中提取关键概念
+    # Extract key concepts from RAG documentation
     rag_keywords = set()
-    for doc in retrieved_docs[:2]:  # 只看前2个最相关的文档
+    for doc in retrieved_docs[:2]:  # Only view the top 2 most relevant documents
         content = doc.page_content.lower()
-        # 提取关键生物学/保护相关词汇
+        # Extract key biological/conservation-related vocabulary
         bio_keywords = ['monk seal', 'mediterranean monk seal', 'seal', 'endemic', 'madeira', 'conservation', 
                         'endangered', 'breeding', 'pup', 'habitat', 'species', 'population', 'marine',
                         'monachus', 'monachus monachus', 'coastal', 'ocean', 'marine mammal']
@@ -176,10 +176,10 @@ def optimize_search_query(question, retrieved_docs):
             if keyword in content:
                 rag_keywords.add(keyword)
     
-    # 构建精准搜索查询
+    # Build Precise Search Queries
     base_query = "Mediterranean monk seal"
     
-    # 添加相关上下文关键词
+    # Add relevant contextual keywords
     if 'conservation' in rag_keywords or 'endangered' in rag_keywords:
         base_query += " conservation status"
     elif 'breeding' in rag_keywords or 'nesting' in rag_keywords:
@@ -189,7 +189,7 @@ def optimize_search_query(question, retrieved_docs):
     else:
         base_query += " marine mammal biology"
     
-    # 添加英文关键词确保搜索质量
+    # Add English keywords to ensure search quality.
     base_query += " seal species"
     
     return base_query
@@ -198,18 +198,18 @@ def optimize_search_query(question, retrieved_docs):
 
 def filter_search_results(results, question):
     """
-    智能过滤搜索结果，排除无关内容
+    Intelligently filter search results to exclude irrelevant content
     
     Args:
-        results: 原始搜索结果列表
-        question: 用户问题
+        results: Raw list of search results
+        question: User query
     
     Returns:
-        list: 过滤后的相关结果
+        list: Filtered list of relevant results
     """
     filtered = []
     
-    # 相关关键词（生物学/保护相关）
+    # Related Keywords (Biology/Conservation)
     relevant_keywords = [
         'monk seal', 'seal', 'marine mammal', 'species', 'madeira', 'conservation', 
         'endangered', 'breeding', 'habitat', 'marine biology', 'wildlife',
@@ -217,7 +217,7 @@ def filter_search_results(results, question):
         'pup', 'colony', 'protected', 'marine', 'ocean'
     ]
     
-    # 无关关键词（技术/编程相关）
+    # Irrelevant Keywords (Technology/Programming Related)
     irrelevant_keywords = [
         'framework', 'programming', 'code', 'software', 'api', 'rust',
         '编程', '框架', '开发', '代码', 'github', 'npm', 'cargo'
@@ -228,67 +228,73 @@ def filter_search_results(results, question):
         body = result.get('body', '').lower()
         combined = title + ' ' + body
         
-        # 检查是否包含无关关键词
+        # Check if it contains irrelevant keywords
         has_irrelevant = any(keyword in combined for keyword in irrelevant_keywords)
         if has_irrelevant:
-            print(f"[Fact-Check] 过滤无关结果: {result.get('title', 'Unknown')[:50]}...")
+            print(f"[Fact-Check] Filter out irrelevant results: {result.get('title', 'Unknown')[:50]}...")
             continue
         
-        # 检查是否包含相关关键词
+        # Check if it contains relevant keywords
         has_relevant = any(keyword in combined for keyword in relevant_keywords)
         if has_relevant:
             filtered.append(result)
+        else:
+            # Additional check: If the title explicitly includes the name of a key species, retain it as well.
+            title_lower = title.lower()
+            if any(name in title_lower for name in ['monk seal', 'madeira monk seal', 'mediterranean monk seal']):
+                filtered.append(result)
+    
     
     return filtered
 
 
 def web_search_supplement(question, retrieved_docs=None, language="English"):
     """
-    智能网络搜索补充信息
-    支持 DuckDuckGo（免费）和 Tavily（需 API Key）
+    Smart Web Search Supplement
+    Supports DuckDuckGo (free) and Tavily (requires API Key)
     
     Args:
-        question: 用户问题
-        retrieved_docs: RAG 检索到的文档（用于优化搜索查询）
-        language: 语言
+        question: User query
+        retrieved_docs: Documents retrieved by RAG (for query optimization)
+        language: Language
     
     Returns:
-        str: 网络搜索结果摘要（如果启用）
+        str: Web search result summary (if enabled)
     """
-    # 检查是否启用网络搜索
+    # Check if network search is enabled
     use_web_search = os.getenv("USE_WEB_SEARCH", "false").lower() == "true"
     
     if not use_web_search:
         return None
     
-    # 优化搜索查询（基于 RAG 上下文）
+    # Optimizing Search Queries (Based on RAG Context)
     if retrieved_docs and len(retrieved_docs) > 0:
         optimized_query = optimize_search_query(question, retrieved_docs)
-        print(f"[Fact-Check] 优化搜索查询: {optimized_query}")
+        print(f"[Fact-Check] Optimize Search Queries: {optimized_query}")
     else:
         optimized_query = f"Mediterranean monk seal {question} marine mammal"
     
-    # 获取搜索提供商（默认 duckduckgo）
+    # Get Search Provider (Default: DuckDuckGo)
     provider = os.getenv("WEB_SEARCH_PROVIDER", "duckduckgo").lower()
     
-    # 方案 1: DuckDuckGo（完全免费，无需 API Key）
-    results = []  # 初始化 results 变量
+    # Option 1: DuckDuckGo (Completely free, no API key required)
+    results = []  # Initialize the results variable
     
     if provider == "duckduckgo":
         try:
             from ddgs import DDGS
             
-            # 使用新版 API（无需 context manager）
+            # Use the new API (no context manager required)
             ddgs = DDGS()
-            # 新版 API：参数名是 query 而不是 keywords
+            # New API: The parameter name is query instead of keywords.
             raw_results = list(ddgs.text(
                 query=optimized_query,
-                max_results=5  # 多获取一些结果，后续过滤
+                max_results=5  # Get more results and filter them later.
             ))
             
-            # 智能过滤结果
+            # Smart Filtered Results
             results = filter_search_results(raw_results, question)
-            print(f"[Fact-Check] 原始结果: {len(raw_results)} → 过滤后: {len(results)}")
+            print(f"[Fact-Check] raw results: {len(raw_results)} → After filtering: {len(results)}")
             
             if results:
                 if language == "Portuguese":
@@ -296,7 +302,7 @@ def web_search_supplement(question, retrieved_docs=None, language="English"):
                 else:
                     summary = "🌐 **Internet Information:**\n\n"
                 
-                # 只显示前2个最相关的结果
+                # Show only the top 2 most relevant results
                 for i, result in enumerate(results[:2], 1):
                     title = result.get('title', 'Unknown')
                     body = result.get('body', '')[:150]
@@ -307,13 +313,13 @@ def web_search_supplement(question, retrieved_docs=None, language="English"):
                 return summary.strip()
         
         except ImportError:
-            print("[Fact-Check] DDGS 未安装，运行: pip install ddgs")
+            print("[Fact-Check] DDGS Not installed, running: pip install ddgs")
         except Exception as e:
-            print(f"[Fact-Check] DuckDuckGo 搜索失败: {str(e)}")
-            print(f"[Fact-Check] 尝试降级到 Tavily...")
+            print(f"[Fact-Check] DuckDuckGo Search failed: {str(e)}")
+            print(f"[Fact-Check] Try downgrading to Tavily...")
     
-    # 方案 2: Tavily（需要 API Key，1000 次/月免费）
-    # 如果 DuckDuckGo 失败或提供商设置为 tavily，尝试 Tavily
+    # Option 2: Tavily (Requires API Key, 1000 free requests/month)
+    # If DuckDuckGo fails or the provider is set to tavily, try Tavily
     if provider == "tavily" or (provider == "duckduckgo" and len(results) == 0):
         try:
             tavily_key = os.getenv("TAVILY_API_KEY")
@@ -345,37 +351,37 @@ def web_search_supplement(question, retrieved_docs=None, language="English"):
                     return summary.strip()
         
         except ImportError:
-            print("[Fact-Check] Tavily 未安装，运行: pip install tavily-python")
+            print("[Fact-Check] Tavily Not installed, running: pip install tavily-python")
         except Exception as e:
-            print(f"[Fact-Check] Tavily 搜索失败: {str(e)}")
+            print(f"[Fact-Check] Tavily Search failed: {str(e)}")
     
     return None
 
 
 def generate_fact_check_content(question, retrieved_docs, ai_answer, language="English"):
     """
-    生成完整的 Fact-Check 内容（智能优化版）
+    Generate complete fact-check content (intelligent optimization version)
     
     Args:
-        question: 用户问题
-        retrieved_docs: 检索到的文档
-        ai_answer: AI 回答
-        language: 语言
+        question: User question
+        retrieved_docs: Retrieved documents
+        ai_answer: AI response
+        language: Language
     
     Returns:
-        str: HTML 格式的 Fact-Check 内容
+        str: Fact-check content in HTML format
     """
-    # 1. 生成知识库摘要
+    # 1. Generate a knowledge base summary
     kb_summary = summarize_fact_check(question, retrieved_docs, ai_answer, language)
     
-    # 2. 可选：智能网络搜索补充（传递 RAG 文档用于优化搜索查询）
+    # 2. Optional: Intelligent Network Search Supplement (Passing RAG documents to optimize search queries)
     web_summary = web_search_supplement(
         question=question, 
-        retrieved_docs=retrieved_docs,  # 传递 RAG 上下文优化搜索
+        retrieved_docs=retrieved_docs,  # Passing RAG Context to Optimize Search
         language=language
     )
     
-    # 3. 组合内容
+    # 3. Combined Content
     if language == "Portuguese":
         header = "📋 **Verificação de Factos Baseada em Conhecimento Científico**\n\n"
     else:

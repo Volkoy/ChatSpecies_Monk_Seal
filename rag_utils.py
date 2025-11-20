@@ -1,6 +1,6 @@
 """
-RAG 检索优化工具
-包含向量库缓存、动态 k 值调整、相关性过滤等优化策略
+RAG Retrieval Optimization Tool
+Includes optimization strategies such as vector cache, dynamic k-value adjustment, and relevance filtering.
 """
 
 import os
@@ -9,7 +9,7 @@ from langchain_community.embeddings import DashScopeEmbeddings
 from langchain_chroma import Chroma
 
 class OptimizedRAG:
-    """优化的 RAG 检索器"""
+    """Optimized RAG Retriever"""
     
     def __init__(self, persist_directory, dashscope_api_key):
         self.persist_directory = persist_directory
@@ -18,9 +18,9 @@ class OptimizedRAG:
         
     @property
     def vectordb(self):
-        """延迟加载并缓存向量数据库"""
+        """Lazy-loading and caching vector databases"""
         if self._vectordb is None:
-            print(f"[RAG] 加载向量数据库: {self.persist_directory}")
+            print(f"[RAG] Load the vector database: {self.persist_directory}")
             embeddings = DashScopeEmbeddings(
                 model=os.getenv("QWEN_EMBEDDING_MODEL", "text-embedding-v3"),
                 dashscope_api_key=self.dashscope_api_key
@@ -28,37 +28,37 @@ class OptimizedRAG:
             self._vectordb = Chroma(
                 embedding_function=embeddings,
                 persist_directory=self.persist_directory,
-                collection_name="Monk_Seal_knowledge"  # 与向量化脚本保持一致
+                collection_name="Monk_Seal_knowledge"  # Maintain consistency with vectorized scripts
             )
-            print(f"[RAG] ✅ 向量数据库已加载")
+            print(f"[RAG] ✅ The vector database has been loaded.")
         return self._vectordb
     
     def retrieve(self, query, k=None, fetch_k=None, lambda_mult=0.7, 
                  relevance_threshold=None):
         """
-        智能检索文档
+         Smart Document Retrieval
         
         Args:
-            query: 查询文本
-            k: 返回文档数量（None 则自动调整）
-            fetch_k: MMR 候选池大小（None 则自动调整）
-            lambda_mult: MMR 多样性参数（0-1，越大越相关，越小越多样）
-            relevance_threshold: 相关性阈值（0-1，过滤低质量文档）
+            query: Search text
+            k: Number of documents to return (None for auto-adjustment)
+            fetch_k: MMR candidate pool size (None for auto-adjustment)
+            lambda_mult: MMR diversity parameter (0-1; higher values prioritize relevance, lower values prioritize diversity)
+            relevance_threshold: Relevance threshold (0-1; filters low-quality documents)
         
         Returns:
-            list: 检索到的文档列表
+            list: Retrieved document list
         """
-        # 动态调整 k 值（基于查询复杂度）
+        # Dynamically adjust the k value (based on query complexity)
         if k is None:
             k = self._estimate_k(query)
         
-        # 动态调整 fetch_k
+        # Dynamic Adjustment of fetch_k
         if fetch_k is None:
-            fetch_k = k * 3  # 候选池是返回数量的3倍
+            fetch_k = k * 3  # The candidate pool is three times the number of returns.
         
-        print(f"[RAG] 检索参数: k={k}, fetch_k={fetch_k}, lambda_mult={lambda_mult}")
+        print(f"[RAG] Search Parameters: k={k}, fetch_k={fetch_k}, lambda_mult={lambda_mult}")
         
-        # 使用 MMR（最大边际相关性）检索
+        # Retrieval Using MMR (Maximum Marginal Relevance)
         docs = self.vectordb.max_marginal_relevance_search(
             query,
             k=k,
@@ -66,24 +66,24 @@ class OptimizedRAG:
             lambda_mult=lambda_mult
         )
         
-        # 相关性过滤（如果设置了阈值）
+        # Relevance Filtering (if a threshold is set)
         if relevance_threshold is not None:
             filtered_docs = self._filter_by_relevance(
                 query, docs, threshold=relevance_threshold
             )
-            print(f"[RAG] 相关性过滤: {len(docs)} -> {len(filtered_docs)} 文档")
+            print(f"[RAG] Relevance Filtering: {len(docs)} -> {len(filtered_docs)} document")
             return filtered_docs
         
         return docs
     
     def _estimate_k(self, query):
         """
-        基于查询复杂度估算 k 值
+        Estimating k Value Based on Query Complexity
         
-        简单启发式规则：
-        - 短问题（<20词）: k=2
-        - 中等问题（20-50词）: k=3
-        - 复杂问题（>50词）: k=4
+        Simple heuristic rules:
+        - Short queries (<20 words): k=2
+        - Medium queries (20-50 words): k=3
+        - Complex queries (>50 words): k=4
         """
         word_count = len(query.split())
         
@@ -96,33 +96,33 @@ class OptimizedRAG:
     
     def _filter_by_relevance(self, query, docs, threshold=0.6):
         """
-        基于相关性分数过滤文档
+        Filter documents based on relevance scores
         
         Args:
-            query: 查询文本
-            docs: 文档列表
-            threshold: 相关性阈值（0-1）
+            query: Search text
+            docs: Document list
+            threshold: Relevance threshold (0-1)
         
         Returns:
-            list: 过滤后的文档
+            list: Filtered documents
         """
-        # 使用 similarity_search_with_score 获取相关性分数
+        # Use similarity_search_with_score to obtain relevance scores
         docs_with_scores = self.vectordb.similarity_search_with_score(
             query, 
             k=len(docs)
         )
         
-        # 过滤低于阈值的文档
-        # 注意：ChromaDB 的距离越小越相关（L2距离），需要转换为相似度
+        # Filter documents below the threshold
+        # Note: Smaller ChromaDB distances indicate higher relevance (L2 distance), requiring conversion to similarity scores
         filtered = [
             doc for doc, score in docs_with_scores 
-            if score < (1 - threshold)  # 距离阈值转换
+            if score < (1 - threshold)  # Distance Threshold Conversion
         ]
         
-        return filtered if filtered else docs[:1]  # 至少返回1个文档
+        return filtered if filtered else docs[:1]  # Return at least one document.
     
     def get_stats(self):
-        """获取向量库统计信息"""
+        """Retrieve vector library statistics"""
         collection = self.vectordb._collection
         count = collection.count()
         return {
@@ -132,19 +132,19 @@ class OptimizedRAG:
         }
 
 
-# 全局 RAG 实例缓存（避免重复加载）
+# Global RAG Instance Caching (Preventing Repeated Loading)
 _rag_instances = {}
 
 def get_rag_instance(persist_directory, dashscope_api_key):
     """
-    获取 RAG 实例（带缓存）
+    Get RAG Instance (With Cache)
     
     Args:
-        persist_directory: 向量库路径
+        persist_directory: Vector store path
         dashscope_api_key: DashScope API Key
     
     Returns:
-        OptimizedRAG: RAG 实例
+        OptimizedRAG: RAG instance
     """
     if persist_directory not in _rag_instances:
         _rag_instances[persist_directory] = OptimizedRAG(

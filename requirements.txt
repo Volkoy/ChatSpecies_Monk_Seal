@@ -1,4 +1,4 @@
-# ==================== 核心框架 ====================
+# ==================== Core Framework ====================
 langchain==0.2.11
 langchain-chroma==0.1.2
 langchain-community==0.2.10
@@ -7,25 +7,25 @@ chromadb
 streamlit
 python-dotenv
 
-# ==================== Qwen 相关（新增）====================
+# ==================== Qwen Related (New Addition)====================
 dashscope>=1.24.6
 numpy
-tqdm  # 向量化进度显示
+tqdm  # Vectorized Progress Display
 
-# ==================== 原有依赖 ====================
+# ==================== Existing Dependencies ====================
 pypdf
 tiktoken
 SpeechRecognition==3.10.0
-# pysqlite3-binary  # Windows/Conda 环境不需要，已从代码中移除
+# pysqlite3-binary  # Windows/Conda environment is not required and has been removed from the code.
 gTTS
 pydub
 ffmpeg-python
 pocketsphinx
 st-supabase-connection==2.1.1
-supabase  # Supabase 客户端（用于测试）
+supabase  # Supabase Client (for testing)
 
-# ==================== 可选依赖（Day 3-4 需要）====================
-ddgs  # 免费互联网搜索（推荐，用于 Fact-Check 补充，原 duckduckgo-search 已改名）
-tavily-python      # 高质量搜索（可选，需 API Key）
-# cohere         # 重排序（可选）
-# langchain-openai  # OpenAI 降级（可选）
+# ==================== Optional Dependencies ====================
+ddgs  # Free Internet Search (Recommended for fact-checking supplements; formerly known as duckduckgo-search)
+tavily-python      # High-Quality Search (Optional, Requires API Key)
+# cohere         # Reorder (optional)
+# langchain-openai  # OpenAI (optional)

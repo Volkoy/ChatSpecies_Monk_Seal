@@ -1,34 +1,34 @@
 @echo off
 REM ==========================================
-REM   RAG 系统快速设置脚本
+REM   RAG System Quick Setup Script
 REM ==========================================
 
 echo ==========================================
-echo   RAG 系统快速设置
+echo   RAG System Quick Setup
 echo ==========================================
 echo.
 
-REM 1. 安装依赖
-echo [1/3] 安装依赖包...
+REM 1. Install dependencies
+echo [1/3] Install dependency packages...
 pip install -q tqdm
-echo ✅ 完成
+echo ✅ Completed
 echo.
 
-REM 2. 运行向量化脚本
+REM 2. Run the vectorized script
 echo [2/3] Start vectorization (5-10 minutes)...
 echo.
 python vectorize_knowledge_base.py
 echo.
 
-REM 3. 完成
-echo [3/3] 设置完成！
+REM 3. Complete
+echo [3/3] Setup complete!
 echo.
 echo ==========================================
-echo   🎉 RAG 系统已就绪!
+echo   🎉 RAG system is ready!
 echo ==========================================
 echo.
-echo 下一步: 
-echo   运行 'streamlit run main.py' 开始使用
+echo Next Step: 
+echo   Run 'streamlit run main.py' to get started.
 echo.
 pause
 

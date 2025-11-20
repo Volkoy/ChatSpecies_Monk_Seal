@@ -1,291 +1,300 @@
-# 🚀 Zino's Chat - 快速部署指南
+# 🚀 ChatSpecies - Quick Deployment Guide
 
-**3 种部署方式，10 分钟上线！**
-
----
-
-## 📋 部署前准备
-
-### 必需的 API Keys
-
-| API | 用途 | 获取地址 | 费用 |
-|-----|------|----------|------|
-| **Qwen API** | LLM + TTS + Embeddings | [DashScope](https://dashscope.aliyun.com/) | 免费额度可用 |
-| **Supabase** | 交互记录存储 | [Supabase](https://supabase.com/) | 免费计划足够 |
-
-### 可选的 API Keys
-
-| API | 用途 | 获取地址 | 费用 |
-|-----|------|----------|------|
-| **Tavily** | 高质量网络搜索 | [Tavily](https://tavily.com/) | 1000次/月免费 |
+**3 Deployment Methods, Go Live in 10 Minutes!**
 
 ---
 
-## 🎯 方式 1: 本地部署（Windows）⭐ 推荐新手
+## 📋 Pre-deployment Preparation
 
-### 步骤 1: 克隆项目
+### Required API Keys
+
+| API | Purpose | Get Address | Cost |
+|-----|---------|-------------|------|
+| **Qwen API** | LLM + TTS + Embeddings | [DashScope](https://dashscope.aliyun.com/) | Free tier available |
+| **Supabase** | Interaction Log Storage | [Supabase](https://supabase.com/) | Free plan sufficient |
+
+### Optional API Keys
+
+| API | Purpose | Get Address | Cost |
+|-----|---------|-------------|------|
+| **Tavily** | High-quality Web Search | [Tavily](https://tavily.com/) | 1000 free searches/month |
+
+---
+
+## 🎯 Method 1: Local Deployment (Windows) ⭐ Recommended for Beginners
+
+### Step 1: Clone the Project
 ```bash
-git clone https://github.com/你的用户名/zinos-chat.git
+git clone https://github.com/your-username/zinos-chat.git
 cd zinos-chat
 ```
 
-### 步骤 2: 安装依赖
+### Step 2: Install Dependencies
 ```bash
-# 使用 pip
+# Using pip
 pip install -r requirements.txt
 ```
 
-### 步骤 3: 配置环境变量
+### Step 3: Configure Environment Variables
 ```bash
-# 1. 复制配置模板
+# 1. Copy configuration template
 copy config.env.template .env
 
-# 2. 编辑 .env 文件，填入你的 API Keys
+# 2. Edit .env file, fill in your API Keys
 notepad .env
 ```
 
-**必需配置：**
+**Required Configuration：**
 ```env
-DASHSCOPE_API_KEY=sk-你的Qwen密钥
-SUPABASE_URL=https://你的项目.supabase.co
-SUPABASE_KEY=你的Supabase密钥
+DASHSCOPE_API_KEY=sk-your-qwen-key
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_KEY=your-supabase-key
 ```
 
-**可选配置：**
+**Optional Configuration：**
 ```env
 USE_WEB_SEARCH=true
 WEB_SEARCH_PROVIDER=duckduckgo
-TAVILY_API_KEY=tvly-你的密钥（可选）
+TAVILY_API_KEY=tvly-your-key
+OPENAI_API_KEY="your openai api key"
+ENABLE_OPENAI_FALLBACK=false
+AZURE_TTS_KEY="your azure tts key"
+AZURE_TTS_REGION=westeurope
 ```
 
-### 步骤 4: 设置 RAG 知识库
+### Step 4: Set up RAG Knowledge Base
 ```bash
-# 一键设置（推荐）
+# One-click setup (Recommended)
 setup_rag_system.bat
 
-# 或手动执行
+# Or execute manually
 pip install tqdm
 python vectorize_knowledge_base.py
 ```
 
-**等待 5-10 分钟**，完成后应看到：
+**Wait 5-10 minute**，after completion you should see：
 ```
-✅ 向量数据库创建成功！
-📊 统计信息:
-   - 文档数量: 1298 blocks
-   - 嵌入模型: text-embedding-v3
+✅ 向Vector database created successfully!
+📊 Statistics:
+   - Document Count: 1298 blocks
+   - Embedding Model: text-embedding-v3
 ```
 
-### 步骤 5: 启用智能网络搜索（可选）
+### Enable Smart Web Search (Optional)
 ```bash
-# 已包含在 requirements.txt，无需额外操作
-# 网络搜索功能将自动启用
+# Already included in requirements.txt, no additional action needed
+# Web search functionality will be automatically enabled
 ```
 
-### 步骤 6: 运行应用
+### Run the Application
 ```bash
 streamlit run main.py
 ```
 
-**访问**: http://localhost:8501
+**Visit**: http://localhost:8501
 
 ---
 
-## 🌐 方式 2: Streamlit Cloud 部署（在线访问）
+## 🌐 Method 2: Streamlit Cloud Deployment (Online Access)）
 
-### 步骤 1: 准备 GitHub 仓库
+### Step 1: Prepare GitHub Repository
 ```bash
-# 1. Fork 或推送项目到你的 GitHub
+# 1. Fork or push the project to your GitHub
 git add .
 git commit -m "Initial commit"
 git push origin main
 ```
 
-### 步骤 2: 部署到 Streamlit Cloud
+### Step 2: Deploy to Streamlit Cloud
 
-1. 访问 [Streamlit Cloud](https://share.streamlit.io/)
-2. 点击 "New app"
-3. 选择你的 GitHub 仓库
-4. 配置：
+1. Visit [Streamlit Cloud](https://share.streamlit.io/)
+2. Click "New app"
+3. Select your GitHub repository
+4. Configure：
    - **Main file path**: `main.py`
    - **Python version**: 3.11
 
-### 步骤 3: 配置 Secrets
+### Step 3: Configure Secrets
 
-在 Streamlit Cloud 设置页面，添加以下 Secrets：
+On the Streamlit Cloud settings page, add the following Secrets:
 
 ```toml
 # .streamlit/secrets.toml
 
-# 必需配置
-DASHSCOPE_API_KEY = "sk-你的Qwen密钥"
-SUPABASE_URL = "https://你的项目.supabase.co"
-SUPABASE_KEY = "你的Supabase密钥"
+# Required Configuration
+DASHSCOPE_API_KEY = "sk-your-qwen-key"
+SUPABASE_URL = "https://your-project.supabase.co"
+SUPABASE_KEY = "your-supabase-key"
 
-# 可选配置
+# Optional Configuration
 USE_WEB_SEARCH = "true"
 WEB_SEARCH_PROVIDER = "duckduckgo"
-TAVILY_API_KEY = "tvly-你的密钥"
+TAVILY_API_KEY = "tvly-your-key"
+OPENAI_API_KEY="your openai api key"
+ENABLE_OPENAI_FALLBACK=false
+AZURE_TTS_KEY="your azure tts key"
+AZURE_TTS_REGION="westeurope"
 
-# 模型配置
+# Model Configuration
 QWEN_MODEL_NAME = "qwen-turbo"
 QWEN_EMBEDDING_MODEL = "text-embedding-v3"
 QWEN_TTS_MODEL = "qwen3-tts-flash"
 QWEN_TTS_VOICE = "Cherry"
 ```
 
-### 步骤 4: 部署并测试
+### Step 4: Deploy and Test
 
-1. 点击 "Deploy"
-2. 等待部署完成（约 2-3 分钟）
-3. 访问你的应用链接
+1. Click "Deploy"
+2. Wait for deployment to complete (approx. 2-3 minutes)
+3. Visit your application link
 
 ---
 
-## 🐧 方式 3: Linux/Mac 部署
+## 🐧 Method 3: Linux/Mac Deployment
 
-### 步骤 1: 克隆项目
+### Step 1: Clone the Project
 ```bash
-git clone https://github.com/你的用户名/zinos-chat.git
+git clone https://github.com/your-username/monkseal-chat.git
 cd zinos-chat
 ```
 
-### 步骤 2: 创建虚拟环境（推荐）
+### Step 2: Create Virtual Environment (Recommended)
 ```bash
 # Python venv
 python3 -m venv venv
 source venv/bin/activate
 
-# 或使用 conda
+# Or use conda
 conda create -n zinos python=3.11
 conda activate zinos
 ```
 
-### 步骤 3: 安装依赖
+### Step 3: Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 步骤 4: 配置环境变量
+### Step 4: Configure Environment Variables
 ```bash
-# 复制配置模板
+# Copy configuration template
 cp config.env.template .env
 
-# 编辑配置
+# Edit configuration
 nano .env
-# 或 vim .env
+# or vim .env
 ```
 
-### 步骤 5: 设置 RAG 知识库
+### Step 5: Set up RAG Knowledge Base
 ```bash
 pip install tqdm
 python vectorize_knowledge_base.py
 ```
 
-### 步骤 6: 启用网络搜索（可选）
+### Step 6: Enable Web Search (Optional)
 ```bash
 pip install ddgs
 ```
 
-在 `.env` 中添加：
+Add to `.env` ：
 ```env
 USE_WEB_SEARCH=true
 WEB_SEARCH_PROVIDER=duckduckgo
 ```
 
-### 步骤 7: 运行应用
+### Step 7: Run the Application
 ```bash
 streamlit run main.py
 ```
 
 ---
 
-## 🧪 部署后测试
+## 🧪 Post-deployment Testing
 
-### 1. 基础功能测试
+### 1. Basic Functionality Test
 
-访问应用后：
-1. ✅ 选择语言（English/Português）
-2. ✅ 输入问题："Hi, how are you?"
-3. ✅ 检查 AI 回复
-4. ✅ 检查语音播放
+After accessing the application:
+1. ✅ Select language（English/Português）
+2. ✅ Enter question："Hi, how are you?"
+3. ✅ Check AI response
+4. ✅ Check voice playback
 
-### 2. RAG 质量测试
+
+### 2. RAG Quality Test
 ```bash
-# 完整测试
+# Full test
 python test_rag_quality.py
 
-# 快速测试
+# Quick test
 python test_user_questions.py
 ```
 
-**期望结果：**
+**Expected Results：**
 ```
-✅ 向量库路径: db5_qwen
-✅ 文档数量: 1298
-✅ 检索质量: 优秀（覆盖率 ≥75%）
+✅ Vector Store Path: db5_qwen
+✅ Document Count: 1298
+✅ Retrieval Quality: Excellent (Coverage ≥75%)
 ```
 
-### 3. 网络搜索测试
+### 3. Web Search Test
 ```bash
 python test_smart_search.py
 ```
 
-**期望结果：**
+**Expected Result：**
 ```
-✅ 搜索查询优化正常
-✅ 结果过滤正常（无技术/编程内容）
-✅ 全部测试通过
+✅ Search query optimization normal
+✅ Result filtering normal (no technical/programming content)
+✅ All tests passed
 ```
 
 ---
 
-## 🔧 常见部署问题
+## 🔧 Common Deployment Issues
 
-### 问题 1: DDGS 包错误
+### Issue 1: DDGS Package Error
 
-**错误：**
+**Error:**
 ```
 DDGS.text() missing 1 required positional argument: 'query'
 ```
 
-**解决：**
+**Solution：**
 ```bash
-# 卸载旧包，安装新包
+# Uninstall old package, install new package
 pip uninstall duckduckgo-search -y
 pip install ddgs
 ```
 
 ---
 
-### 问题 2: 向量数据库为空
+### Issue 2: Empty Vector Database
 
-**错误：**
+**Error：**
 ```
-文档数量: 0
+Document Count: 0
 ```
 
-**解决：**
+**Solution：**
 ```bash
-# 确保嵌入模型配置正确
-# 在 .env 中：
+# Ensure embedding model configuration is correct
+# In .env:
 QWEN_EMBEDDING_MODEL=text-embedding-v3
 
-# 重新向量化
+# Re-vectorize
 python vectorize_knowledge_base.py
 ```
 
 ---
 
-### 问题 3: Streamlit Cloud 部署失败
+### Issue 3: Streamlit Cloud Deployment Failed
 
-**错误：**
+**Error：**
 ```
 ModuleNotFoundError: No module named 'ddgs'
 ```
 
-**解决：**
-确保 `requirements.txt` 包含：
+**Solution：**
+Ensure `requirements.txt` contains：
 ```
 ddgs
 tavily-python
@@ -293,76 +302,76 @@ tavily-python
 
 ---
 
-### 问题 4: Supabase 连接失败
+### Issue 4: Supabase Connection Failed
 
-**错误：**
+**Error：**
 ```
 Connection to Supabase failed
 ```
 
-**解决：**
-1. 检查 Supabase URL 和 Key 是否正确
-2. 确保数据库表已创建：
-   - 运行 `create_table_interactions.sql`
-   - 或在 Supabase Dashboard 手动创建
+**Solution：**
+1. Check if Supabase URL and Key are correct
+2. Ensure database tables are created:
+   - Run `create_table_interactions.sql`
+   - Or create manually in Supabase Dashboard
 
 ---
 
-## 📊 部署检查清单
+## 📊 Deployment Checklist
 
-### 环境配置 ✅
+### Environment Configuration ✅
 
-- [ ] Python 3.11+ 已安装
-- [ ] 所有依赖已安装（`pip install -r requirements.txt`）
-- [ ] `.env` 文件已配置
-- [ ] Qwen API Key 有效
-- [ ] Supabase URL 和 Key 有效
+- [ ] Python 3.11+ installed
+- [ ] All dependencies installed（`pip install -r requirements.txt`）
+- [ ] `.env` file configured
+- [ ] Qwen API Key valid
+- [ ] Supabase URL and Key valid
 
-### RAG 系统 ✅
+### RAG System ✅
 
-- [ ] 向量数据库已创建（`db5_qwen/`）
-- [ ] 文档数量 = 1298
-- [ ] 嵌入模型 = text-embedding-v3
-- [ ] RAG 测试通过（`test_rag_quality.py`）
+- [ ] Vector database created（`db5_qwen/`）
+- [ ] Document Count = 1298
+- [ ] Embedding Model = text-embedding-v3
+- [ ] RAG test passed（`test_rag_quality.py`）
 
-### 网络搜索 ✅
+### Web Search  ✅
 
-- [ ] DDGS 包已正确安装
-- [ ] `USE_WEB_SEARCH=true` 已配置
-- [ ] 搜索测试通过（`test_smart_search.py`）
+- [ ] DDGS package correctly installed
+- [ ] `USE_WEB_SEARCH=true` configured
+- [ ] Search test passed（`test_smart_search.py`）
 
-### 应用功能 ✅
+### Application Functionality ✅
 
-- [ ] 应用可正常访问
-- [ ] 对话功能正常
-- [ ] 语音合成正常
-- [ ] Fact-Check 功能正常
-- [ ] 双语切换正常
+- [ ] Application accessible normally
+- [ ] Dialogue functionality normal
+- [ ] Speech synthesis normal
+- [ ] Fact-Check functionality normal
+- [ ] Bilingual switching normal
 
 ---
 
-## 🚀 快速命令参考
+## 🚀 Quick Command Reference
 
 ### Windows
 ```bash
-# 完整部署流程
+# Complete deployment process
 git clone <repo>
 cd zinos-chat
 pip install -r requirements.txt
 copy config.env.template .env
-# 编辑 .env 填入 API Keys
+# Edit .env to fill in API Keys
 setup_rag_system.bat
 streamlit run main.py
 ```
 
 ### Linux/Mac
 ```bash
-# 完整部署流程
+# Complete deployment process
 git clone <repo>
 cd zinos-chat
 pip install -r requirements.txt
 cp config.env.template .env
-# 编辑 .env 填入 API Keys
+# Edit .env to fill in API Keys
 pip install tqdm ddgs
 python vectorize_knowledge_base.py
 streamlit run main.py
@@ -370,40 +379,29 @@ streamlit run main.py
 
 ### Streamlit Cloud
 ```bash
-# 1. 推送到 GitHub
+# 1. Push to GitHub
 git push origin main
 
-# 2. 访问 share.streamlit.io
-# 3. 连接仓库并配置 Secrets
-# 4. 点击 Deploy
+# 2. Visit share.streamlit.io
+# 3. Connect repository and configure Secrets
+# 4. Click Deploy
 ```
 
 ---
 
-## 📚 下一步
+## 📚 Next Steps
 
-部署成功后：
+After successful deployment:
 
-1. **体验核心功能**: 与 Zino's Petrel 对话
-2. **测试 RAG 质量**: 运行 `test_rag_quality.py`
-3. **测试智能搜索**: 运行 `test_smart_search.py`
-4. **阅读完整文档**: [docs/COMPLETE_GUIDE.md](docs/COMPLETE_GUIDE.md)
-5. **自定义配置**: 调整 `.env` 中的参数
-
----
-
-## 🆘 获取帮助
-
-遇到问题？
-
-1. **查看文档**: [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)
-2. **运行测试**: `python test_*.py` 诊断问题
-3. **查看日志**: 控制台输出中的 `[Fact-Check]`, `[RAG]` 等信息
-4. **提交 Issue**: [GitHub Issues](https://github.com/你的用户名/zinos-chat/issues)
+1. **Experience Core Features**: Chat with species
+2. **Test RAG Quality**: Run `test_rag_quality.py`
+3. **Test Smart Search**: Run `test_smart_search.py`
+4. **Read Full Documentation**: [docs/COMPLETE_GUIDE.md](docs/COMPLETE_GUIDE.md)
+5. **Customize Configuration**: Adjust parameters in `.env` 
 
 ---
 
-**祝部署顺利！** 🎉
+**Happy Deployment!** 🎉
 
-[⬆ 返回顶部](#-zinos-chat---快速部署指南)
+[⬆ Back to Top](#-chatspecies---quick_deploy)
 

@@ -1,6 +1,6 @@
 """
-TTS 工具模块 - Qwen TTS 官方实现 + European Portuguese Support
-严格按照 qwen3-tts-flash 官方示例
+TTS Utility Module - Qwen TTS Official Implementation + European Portuguese Support
+Strictly follows qwen3-tts-flash official examples
 """
 
 import os
@@ -12,13 +12,13 @@ import streamlit.components.v1 as components
 
 def speak_with_qwen(text, voice="Cherry", model="qwen3-tts-flash"):
     """
-    使用 Qwen TTS - 按照官方注释的正确接口
-    官方注释：dashscope.audio.qwen_tts.SpeechSynthesizer.call(...)
+    Use Qwen TTS - Correct interface according to official documentation
+    Official comment: dashscope.audio.qwen_tts.SpeechSynthesizer.call(...)
     
     Args:
-        text: 要转换的文本
-        voice: 音色（Cherry 或 Ethan）
-        model: TTS 模型（默认 qwen3-tts-flash）
+        text: Text to convert
+        voice: Voice tone (Cherry or Ethan)
+        model: TTS model (default qwen3-tts-flash)
     
     Returns:
         tuple: (success, audio_data_base64 or error_message)
@@ -33,7 +33,7 @@ def speak_with_qwen(text, voice="Cherry", model="qwen3-tts-flash"):
         
         print(f"[TTS DEBUG] Model: {model}, Voice: {voice}")
         
-        # 按照官方注释：dashscope.audio.qwen_tts.SpeechSynthesizer.call(...)
+        # According to official comment: dashscope.audio.qwen_tts.SpeechSynthesizer.call(...)
         response = SpeechSynthesizer.call(
             model=model,
             api_key=api_key,
@@ -44,7 +44,7 @@ def speak_with_qwen(text, voice="Cherry", model="qwen3-tts-flash"):
         
         print(f"[TTS DEBUG] Response type: {type(response)}")
         
-        # 响应是 dict-like 对象，用字典方式访问
+        # Response is dict-like object, access as dictionary
         audio_url = None
         
         if hasattr(response, 'output'):
@@ -59,7 +59,7 @@ def speak_with_qwen(text, voice="Cherry", model="qwen3-tts-flash"):
                 print(f"[TTS DEBUG] audio type: {type(audio)}")
                 print(f"[TTS DEBUG] audio: {audio}")
                 
-                # audio 可能是 dict 或对象
+                # audio could be dict or object
                 if isinstance(audio, dict):
                     audio_url = audio.get('url')
                     print(f"[TTS DEBUG] Extracted URL (dict): {audio_url}")
@@ -76,11 +76,11 @@ def speak_with_qwen(text, voice="Cherry", model="qwen3-tts-flash"):
         if audio_url:
             print(f"[TTS DEBUG] Audio URL: {audio_url}")
             
-            # 下载音频
+            # Download audio
             audio_response = requests.get(audio_url, timeout=10)
             audio_response.raise_for_status()
             
-            # 转 base64
+            # Convert to base64
             audio_data = audio_response.content
             b64_audio = base64.b64encode(audio_data).decode()
             
@@ -97,7 +97,7 @@ def speak_with_qwen(text, voice="Cherry", model="qwen3-tts-flash"):
 
 def speak_with_openai_european_portuguese(text, voice="onyx"):
     """
-    使用 OpenAI TTS 生成欧洲葡萄牙语语音
+    Use OpenAI TTS to generate European Portuguese speech
     """
     try:
         from openai import OpenAI
@@ -111,10 +111,10 @@ def speak_with_openai_european_portuguese(text, voice="onyx"):
         
         print(f"[OpenAI TTS] Generating European Portuguese audio with voice: {voice}")
         
-        # 使用 OpenAI TTS - 虽然没有直接的葡萄牙语变体参数，但使用合适的音色
+        # Use OpenAI TTS - although no direct Portuguese variant parameter, use suitable voice
         response = client.audio.speech.create(
             model="tts-1",
-            voice=voice,  # onyx 或 alloy 对葡萄牙语效果较好
+            voice=voice,  # onyx or alloy work well for Portuguese
             input=text
         )
         
@@ -133,7 +133,7 @@ def speak_with_openai_european_portuguese(text, voice="onyx"):
 
 def speak_with_azure_european_portuguese(text, voice="pt-PT-DuarteNeural"):
     """
-    使用 Azure TTS 生成高质量欧洲葡萄牙语语音（推荐）
+    Use Azure TTS to generate high-quality European Portuguese speech (recommended)
     """
     try:
         import requests
@@ -186,11 +186,11 @@ def speak_with_azure_european_portuguese(text, voice="pt-PT-DuarteNeural"):
 
 def speak(text, voice="Cherry", timeout=10, language="English", portuguese_variant="european"):
     """
-    智能 TTS 函数：英语用 Qwen TTS，葡萄牙语用 European Portuguese TTS
+    Smart TTS function: English uses Qwen TTS, Portuguese uses European Portuguese TTS
     """
     
     if language == "Portuguese":
-        # 优先尝试 Azure TTS（最佳质量）
+        # Try Azure TTS first (best quality)
         if portuguese_variant == "european":
             print(f"[TTS] Using Azure TTS for European Portuguese...")
             success, result = speak_with_azure_european_portuguese(text, voice="pt-PT-DuarteNeural")
@@ -211,10 +211,10 @@ def speak(text, voice="Cherry", timeout=10, language="English", portuguese_varia
                 """
                 return True, audio_html, "Azure European Portuguese TTS"
             
-            # Azure 失败，降级到 OpenAI
+            # Azure failed, fallback to OpenAI
             print(f"[TTS] ❌ Azure TTS failed, falling back to OpenAI: {result}")
         
-        # 使用 OpenAI TTS 生成欧洲葡萄牙语语音
+        # Use OpenAI TTS to generate European Portuguese speech
         print(f"[TTS] Using OpenAI TTS for European Portuguese (voice: onyx)...")
         success, result = speak_with_openai_european_portuguese(text, voice="onyx")
         
@@ -234,12 +234,12 @@ def speak(text, voice="Cherry", timeout=10, language="English", portuguese_varia
             """
             return True, audio_html, "OpenAI European Portuguese TTS"
         else:
-            # OpenAI TTS 失败，降级到 gTTS with European Portuguese
+            # OpenAI TTS failed, fallback to gTTS with European Portuguese
             print(f"[TTS] ❌ OpenAI European Portuguese TTS failed: {result}")
             return _fallback_gtts_european_portuguese(text)
             
     else:
-        # 使用 Qwen TTS 生成英语语音
+        # Use Qwen TTS to generate English speech
         print(f"[TTS] Using Qwen TTS for English (voice: {voice})...")
         success, result = speak_with_qwen(text, voice=voice, model="qwen3-tts-flash")
         
@@ -259,14 +259,14 @@ def speak(text, voice="Cherry", timeout=10, language="English", portuguese_varia
             """
             return True, audio_html, "Qwen TTS"
         else:
-            # Qwen TTS 失败，降级到 gTTS
+            # Qwen TTS failed, fallback to gTTS
             print(f"[TTS] ❌ Qwen TTS failed: {result}")
             return _fallback_gtts(text, "en")
 
 
 def _fallback_gtts_european_portuguese(text):
     """
-    gTTS 降级方案 - 欧洲葡萄牙语
+    gTTS fallback solution - European Portuguese
     """
     try:
         from gtts import gTTS
@@ -274,7 +274,7 @@ def _fallback_gtts_european_portuguese(text):
         
         print(f"[TTS] Falling back to gTTS for European Portuguese...")
         
-        # gTTS 使用 'pt' 参数，但发音更接近欧洲葡萄牙语
+        # gTTS uses 'pt' parameter, but pronunciation is closer to European Portuguese
         tts = gTTS(text=text, lang='pt', slow=False)
         with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as tmp_file:
             tts.save(tmp_file.name)
@@ -296,7 +296,7 @@ def _fallback_gtts_european_portuguese(text):
 
 def _fallback_gtts(text, lang="en"):
     """
-    gTTS 降级方案
+    gTTS fallback solution
     """
     try:
         from gtts import gTTS
@@ -324,9 +324,9 @@ def _fallback_gtts(text, lang="en"):
 
 
 def cleanup_audio_files():
-    """清理临时音频文件"""
+    """Clean up temporary audio files"""
     try:
-        # 清理可能遗留的临时文件
+        # Clean up any leftover temporary files
         import glob
         temp_files = glob.glob("/tmp/tmp*mp3") + glob.glob("/var/folders/*/*/tmp*mp3")
         for temp_file in temp_files:

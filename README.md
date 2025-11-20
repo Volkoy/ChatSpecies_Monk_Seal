@@ -1,4 +1,4 @@
-# 🐦 Zino's Chat - AI 互动教育系统
+# 🐦 ChatSpecies - AI Interactive Education System
 
 <div align="center">
 
@@ -6,87 +6,92 @@
 [![Qwen](https://img.shields.io/badge/Qwen-4A90E2?style=for-the-badge&logo=ai&logoColor=white)](https://tongyi.aliyun.com/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 
-**与濒危海鸟 Zino's Petrel 对话，探索生态保护知识**
+**Chat with the special species in Madeira and explore ecological conservation knowledge**
 
-[快速开始](#-快速开始) • [功能特性](#-功能特性) • [在线体验](#-在线体验) • [部署指南](#-部署指南) • [文档](#-文档)
+[Quick Start](#-quick-start) • [Features](#-features) • [Online Experience](#-online-experience) • [Deployment Guide](#-deployment-guide) • [Documentation](#-documentation)
 
 </div>
 
 ---
 
-## 📖 项目简介
+## 📖 Project Introduction
 
-Zino's Chat 是一个创新的 AI 互动教育系统，让用户能够与濒危海鸟 Zino's Petrel（济诺圆尾鹱）进行对话。系统结合了：
+ChatSpecies is an innovative AI interactive education system that allows users to converse with the special species in Madeira. The system combines:
 
-- 🤖 **Qwen AI 模型** - 智能对话和语音合成
-- 📚 **RAG 知识库** - 基于 1298 个科学文档块的权威知识
-- 🔍 **智能搜索** - 自动过滤无关内容的网络搜索
-- 🎁 **互动系统** - 友谊值评分和贴纸奖励
-- 🌐 **双语支持** - English & Português
-
----
-
-## ✨ 功能特性
-
-### 🗣️ 智能对话系统
-- **角色扮演**: Zino's Petrel 化身，真实互动体验
-- **语音合成**: Qwen TTS 提供自然流畅的语音（支持 Cherry/Ethan 音色）
-- **双语切换**: 英语/葡萄牙语无缝切换
-
-### 📚 RAG 知识增强
-- **权威知识库**: 基于 18 篇科学论文（1298 文档块）
-- **智能检索**: MMR 算法确保多样性和相关性
-- **向量数据库**: ChromaDB + Qwen Embeddings (text-embedding-v3)
-
-### 🔍 智能事实验证
-- **AI 摘要生成**: 自动总结知识库内容
-- **智能网络搜索**: 
-  - 基于 RAG 上下文优化搜索查询
-  - 自动过滤无关内容（编程框架、技术文档等）
-  - DuckDuckGo 免费搜索（无限制）
-- **来源标注**: 自动引用文献和页码
-
-### 🎁 互动激励系统
-- **❤️ Friendship Score**: 基于对话质量的智能评分
-- **🎁 Sticker 奖励**: 解锁特殊主题贴纸（食物、帮助、家园、日常）
-- **🏅 成就勋章**: 达到满分获得神秘礼物
+- 🤖 **Qwen AI Model** - Intelligent dialogue and speech synthesis
+- 📚 **RAG Knowledge Base** - Authoritative knowledge based on 1298 scientific document chunks
+- 🔍 **Smart Search** - Automatic web search filtering irrelevant content
+- 🎁 **Interactive System** - Friendship score rating and sticker rewards
+- 🌐 **Bilingual Support** - English & Português
 
 ---
 
-## 🚀 快速开始
+## ✨ Features
 
-### 方式 1：本地部署（推荐）⭐
+### 🗣️ Intelligent Dialogue System
+- **Role-playing**: Creatures persona for an authentic interactive experience
+- **Speech Synthesis**: Qwen TTS provides natural and fluent speech in English and Azure TTS for Portuguese
+- **Bilingual Switching**: Seamless switching between English/Portuguese
 
-#### 1. 克隆项目
+### 📚 RAG Knowledge Enhancement
+- **Authoritative Knowledge Base**: Based on 18 scientific papers (1298 document chunks)
+- **Intelligent Retrieval**: MMR algorithm ensures diversity and relevance
+- **Vector Database**: ChromaDB + Qwen Embeddings (text-embedding-v3)
+
+### 🔍 Intelligent Fact Verification
+- **AI Summary Generation**: Automatically summarizes knowledge base content
+- **Smart Web Search**:
+  - Optimizes search queries based on RAG context
+  - Automatically filters irrelevant content (programming frameworks, technical docs, etc.)
+  - DuckDuckGo free search (no limits)
+- **Source Attribution**: Automatically cites literature and page numbers
+
+### 🎁 Interactive Incentive System
+- **❤️ Friendship Score**: Intelligent scoring based on dialogue quality
+- **🎁 Sticker Rewards**: Unlock special themed stickers (Food, Help, Home, Daily)
+- **🏅 Achievement Badges**: Receive a mysterious gift upon reaching a perfect score
+
+---
+
+## 🚀 Quick Start
+
+### Method 1: Local Deployment (Recommended) ⭐
+
+#### 1. Clone the Project
 ```bash
-git clone https://github.com/你的用户名/zinos-chat.git
+git clone https://github.com/your-username/zinos-chat.git
 cd zinos-chat
 ```
 
-#### 2. 安装依赖
+#### 2. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-#### 3. 配置 API Keys
-复制 `config.env.template` 为 `.env`，填入你的 API Keys：
+#### 3. Configure API Keys
+Copy config.env.template to .env and fill in your API Keys:
 
 ```env
-# 必需配置
-DASHSCOPE_API_KEY=sk-你的Qwen密钥
-SUPABASE_URL=https://你的项目.supabase.co
-SUPABASE_KEY=你的Supabase密钥
+# Required Configuration
+DASHSCOPE_API_KEY=sk-your-qwen-key
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_KEY=your-supabase-key
 
-# 可选配置
+# Optional Configuration
 USE_WEB_SEARCH=true
 WEB_SEARCH_PROVIDER=duckduckgo
+OPENAI_API_KEY="your openai api key"
+ENABLE_OPENAI_FALLBACK=false
+AZURE_TTS_KEY="your azure tts key"
+AZURE_TTS_REGION=westeurope
 ```
 
-**获取 API Keys：**
-- [Qwen API](https://dashscope.aliyun.com/) - 免费额度可用
-- [Supabase](https://supabase.com/) - 免费计划足够
+**Get API Keys:**
+- [Qwen API](https://dashscope.aliyun.com/) - Free tier available
+- [Supabase](https://supabase.com/) - Free plan sufficient
+- [Microsoft Azure](https://azure.microsoft.com/en-us/products/ai-foundry/tools/speech) - Free tier available
 
-#### 4. 设置 RAG 知识库
+#### 4. Set up RAG Knowledge Base
 ```bash
 # Windows
 setup_rag_system.bat
@@ -96,240 +101,237 @@ pip install tqdm
 python vectorize_knowledge_base.py
 ```
 
-**预期输出：**
+**Expected Output：**
 ```
-✅ 向量数据库创建成功！
-📊 统计信息:
-   - 文档数量: 1298 blocks
-   - 嵌入模型: text-embedding-v3
-   - 向量库路径: db5_qwen
+✅ Vector database created successfully!
+📊 Statistics:
+   - Document Count: 1298 blocks
+   - Embedding Model: text-embedding-v3
+   - Vector Store Path: db5_qwen
 ```
 
-#### 5. 启用智能网络搜索（可选）
+#### 5. nable Smart Web Search (Optional)
 ```bash
-# 已包含在 requirements.txt 中，无需额外安装
-# 如需单独安装：
+# Already included in requirements.txt, no extra installation needed
+# For separate installation:
 pip install ddgs
 ```
 
-#### 6. 运行应用
+#### 6. Run the Application
 ```bash
 streamlit run main.py
 ```
 
-访问: http://localhost:8501
+Visit: http://localhost:8501
 
 ---
 
-### 方式 2：在线体验 🌐
+### Method 2: Online Experience 🌐
 
-#### Streamlit Cloud 部署
+#### Streamlit Cloud Deployment
 
-1. Fork 本项目到你的 GitHub
-2. 访问 [Streamlit Cloud](https://share.streamlit.io/)
-3. 连接 GitHub 仓库并部署
-4. 在 Streamlit 设置中配置 Secrets：
+1. Fork this project to your GitHub
+2. Visit [Streamlit Cloud](https://share.streamlit.io/)
+3. Connect the GitHub repository and deploy
+4. Configure Secrets in Streamlit settings:
 ```toml
-DASHSCOPE_API_KEY = "sk-你的密钥"
-SUPABASE_URL = "https://你的项目.supabase.co"
-SUPABASE_KEY = "你的密钥"
+DASHSCOPE_API_KEY = "sk--your-key"
+SUPABASE_URL = "https://your-project.supabase.co"
+SUPABASE_KEY = "your-key"
 USE_WEB_SEARCH = "true"
 WEB_SEARCH_PROVIDER = "duckduckgo"
+OPENAI_API_KEY="your openai api key"
+ENABLE_OPENAI_FALLBACK=false
+AZURE_TTS_KEY="your azure tts key"
+AZURE_TTS_REGION="westeurope"
 ```
 
-**详细步骤**: 参考 [QUICK_DEPLOY.md](QUICK_DEPLOY.md)
+**Detailed Steps**: Refer to [QUICK_DEPLOY.md](QUICK_DEPLOY.md)
 
 ---
 
-## 📊 项目结构
+## 📊 Project Structure
 
 ```
-zinos-chat/
-├── main.py                          # 主应用
-├── config.py                        # 配置管理
-├── requirements.txt                 # 依赖列表
-├── config.env.template              # 配置模板
+ChatSpeciest/
+├── main.py                          # Main Application
+├── config.py                        # Configuration Management
+├── requirements.txt                 # Dependencies List
+├── config.env.template              # Configuration Template
 │
-├── 核心模块/
-│   ├── rag_utils.py                 # RAG 检索逻辑
-│   ├── fact_check_utils.py          # 事实验证（摘要+搜索）
-│   └── tts_utils.py                 # 语音合成
+├── Core Modules/
+│   ├── rag_utils.py                 # RAG Retrieval Logic
+│   ├── fact_check_utils.py          # Fact Verification (Summary+Search)
+│   └── tts_utils.py                 # Speech Synthesis
 │
-├── 知识库/
-│   ├── Zino's Petrel/               # 18 篇 PDF 科学文献
-│   ├── vectorize_knowledge_base.py  # 向量化脚本
-│   └── db5_qwen/                    # 向量数据库（自动生成）
+├── Knowledge Base/
+│   ├── Zino's Petrel/               # 18 PDF Scientific Papers
+│   ├── vectorize_knowledge_base.py  # Vectorization Script
+│   └── db5_qwen/                    # Vector Database (Auto-generated)
 │
-├── 测试脚本/
-│   ├── test_rag_quality.py          # RAG 质量测试
-│   └── test_user_questions.py       # 用户问题测试
+├── Test Scripts/
+│   ├── test_rag_quality.py          # RAG Quality Test
+│   └── test_user_questions.py       # User Questions Test
 │
-├── 工具脚本/
-│   └── setup_rag_system.bat         # RAG 一键设置
+├── Tool Scripts/
+│   └── setup_rag_system.bat         # RAG One-Click Setup
 │
-├── 资源文件/
-│   ├── zino.png                     # Zino 头像
-│   ├── gift.png                     # 礼物图片
-│   └── stickers/                    # 贴纸图片
+├── Resource Files/
+│   ├── zino.png                     # Zino Avatar
+│   ├── gift.png                     # Gift Image
+│   └── stickers/                    # Sticker Images
 │
-└── 文档/
-    ├── README.md                    # 项目主文档（本文件）
-    └── QUICK_DEPLOY.md              # 快速部署指南
+└── Documentation/
+    ├── README.md                    # Project Main Doc (This File)
+    └── QUICK_DEPLOY.md              # Quick Deployment Guide
 ```
 
 ---
 
-## 🧪 测试与验证
+## 🧪 Testing & Validation
 
-### RAG 质量测试
+### RAG Quality Test
 ```bash
-# 完整测试
+# Full Test
 python test_rag_quality.py
 
-# 用户问题测试
+# User Questions Test
 python test_user_questions.py
 ```
 
-**期望结果：**
-- ✅ 检索质量: 优秀（覆盖率 ≥75%）
-- ✅ 通过率: ≥78%
-- ✅ 平均覆盖率: ≥50%
+**Expected Results：**
+- ✅ Retrieval Quality: Excellent (Coverage ≥75%)
+- ✅ Pass Rate: ≥78%
+- ✅ Average Coverage: ≥50%
 
 ---
 
-## 🛠️ 技术栈
+## 🛠️ Tech Stack
 
-| 类别 | 技术 | 用途 |
+| Category | Technology | Purpose |
 |------|------|------|
-| **AI 模型** | Qwen (通义千问) | LLM、Embeddings、TTS |
-| **前端框架** | Streamlit | Web 应用界面 |
-| **向量数据库** | ChromaDB | 知识库存储 |
-| **RAG 框架** | LangChain | 检索增强生成 |
-| **网络搜索** | DuckDuckGo (ddgs) | 免费互联网搜索 |
-| **数据库** | Supabase | 交互记录存储 |
-| **文档处理** | PyPDF | PDF 解析 |
+| **AI Model** | Qwen (Tongyi Qianwen)、OpenAI、Microsoft Azure| LLM、Embeddings、TTS |
+| **Frontend Framework** | Streamlit | Web App Interface |
+| **Vector Database** | ChromaDB | Knowledge Base Storage |
+| **RAG Framework** | LangChain | Retrieval-Augmented Generation |
+| **Web Search** | DuckDuckGo (ddgs) | Free Internet Search |
+| **Database** | Supabase | Interaction Log Storage |
+| **Document Processing** | PyPDF | PDF Parsing |
 
 ---
 
-## 📈 性能指标
+## 📈 Performance Metrics
 
-### RAG 检索质量
-- **文档数量**: 1298 blocks
-- **检索精度**: ~90%（关键词覆盖率）
-- **平均响应时间**: <1秒
+### RAG Retrieval Quality
+- **Document Count**: 1298 blocks
+- **Retrieval Precision**: ~90%（Keyword Coverage）
+- **Average Response Time**: <1 second
 
-### 智能搜索优化
-- **搜索精准度**: ~90%（优化后）
-- **相关结果占比**: 100%（过滤后）
-- **无关结果数**: 0（自动过滤）
+### Smart Search Optimization
+- **Search Accuracy**: ~90%（After Optimization）
+- **Relevant Results Ratio**: 100%（After Filtering）
+- **Irrelevant Results Count**: 0（Automatically Filtered）
 
-### 用户体验
-- **对话流畅度**: ⭐⭐⭐⭐⭐
-- **知识准确性**: ⭐⭐⭐⭐⭐
-- **界面友好度**: ⭐⭐⭐⭐⭐
+### User Experience
+- **Dialogue Fluency**: ⭐⭐⭐⭐⭐
+- **Knowledge Accuracy**: ⭐⭐⭐⭐⭐
+- **Interface Friendliness**: ⭐⭐⭐⭐⭐
 
 ---
 
-## 📚 文档
+## 📚 Documentation
 
-| 文档 | 说明 |
+| Document | Description |
 |------|------|
-| [QUICK_DEPLOY.md](QUICK_DEPLOY.md) | 快速部署指南（⭐ 推荐新手） |
-| [docs/COMPLETE_GUIDE.md](docs/COMPLETE_GUIDE.md) | 完整使用指南 |
-| [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | 常见问题解决 |
-| [docs/RAG_SETUP_GUIDE.md](docs/RAG_SETUP_GUIDE.md) | RAG 系统设置 |
-| [docs/WEB_SEARCH_GUIDE.md](docs/WEB_SEARCH_GUIDE.md) | 网络搜索配置 |
-| [docs/SMART_SEARCH_QUICK_START.md](docs/SMART_SEARCH_QUICK_START.md) | 智能搜索优化 |
-| [docs/TEST_GUIDE.md](docs/TEST_GUIDE.md) | 测试指南 |
+| [QUICK_DEPLOY.md](QUICK_DEPLOY.md) | Quick Deployment Guide（⭐ Recommended for Beginners） |
+| [docs/COMPLETE_GUIDE.md](docs/COMPLETE_GUIDE.md) | Complete Usage Guide |
+| [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | Common Issue Resolution |
+| [docs/RAG_SETUP_GUIDE.md](docs/RAG_SETUP_GUIDE.md) | RAG System Setup |
+| [docs/WEB_SEARCH_GUIDE.md](docs/WEB_SEARCH_GUIDE.md) | Web Search Configuration |
+| [docs/SMART_SEARCH_QUICK_START.md](docs/SMART_SEARCH_QUICK_START.md) | Smart Search Optimization |
+| [docs/TEST_GUIDE.md](docs/TEST_GUIDE.md) | Testing Guide |
 
 ---
 
-## 🐛 故障排除
+## 🐛 Troubleshooting
 
-### 常见问题
+### Common Issues
 
 <details>
-<summary><b>1. DDGS 包错误</b></summary>
+<summary><b>1. DDGS Package Error</b></summary>
 
-**错误：** `DDGS.text() missing 1 required positional argument: 'query'`
+**Error：** `DDGS.text() missing 1 required positional argument: 'query'`
 
-**解决：**
+**Solution：**
 ```bash
-# 卸载旧包，安装新包
+# Uninstall old package, install new package
 pip uninstall duckduckgo-search -y
 pip install ddgs
 ```
 </details>
 
 <details>
-<summary><b>2. 向量数据库为空</b></summary>
+<summary><b>2. Empty Vector Database</b></summary>
 
-**错误：** `文档数量: 0`
+**Error：** `Document Count: 0`
 
-**解决：**
+**Solution：**
 ```bash
 .\fix_vectordb.bat
 
-# 或手动修复
+# Or manual fix
 pip install ddgs
 python vectorize_knowledge_base.py
 ```
 </details>
 
 <details>
-<summary><b>3. TTS 语音失败</b></summary>
+<summary><b>3. TTS Speech Failure</b></summary>
 
-**错误：** `Qwen TTS failed`
+**Error：** `Qwen TTS failed`
 
-**解决：** 在 `.env` 中检查配置
+**Solution：** Check configuration in .env
 ```env
 QWEN_TTS_MODEL=qwen3-tts-flash
 QWEN_TTS_VOICE=Cherry
 ```
 </details>
 
-**更多问题**: 参考 [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)
+**More Issues**: Refer to [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)
 
 ---
 
-## 🤝 贡献
+## 🤝 Contributing
 
-欢迎贡献！请遵循以下步骤：
+Contributions are welcome! Please follow these steps:
 
-1. Fork 本项目
-2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 开启 Pull Request
-
----
-
-## 📄 许可证
-
-本项目采用 MIT 许可证 - 详见 [LICENSE](LICENSE) 文件
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ---
 
-## 🌟 致谢
+## 📄 License
 
-- **Qwen (通义千问)** - 提供强大的 AI 能力
-- **Streamlit** - 优秀的 Web 框架
-- **LangChain** - RAG 框架支持
-- **科学文献贡献者** - 提供 Zino's Petrel 研究资料
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 📞 联系方式
+## 🌟 Acknowledgments
 
-- 项目链接: [https://github.com/你的用户名/zinos-chat](https://github.com/你的用户名/zinos-chat)
-- 问题反馈: [Issues](https://github.com/你的用户名/zinos-chat/issues)
+- **Qwen OpenAI Microsoft Azure** - Providing powerful AI capabilities
+- **Streamlit** - Excellent web framework
+- **LangChain** - RAG framework support
+- **Scientific Literature Contributors** - Providing Species research materials
 
 ---
 
 <div align="center">
 
-**用 AI 守护濒危物种，让教育更有温度** 💙
+**Using AI to protect endangered species, making education warmer** 💙
 
-[⬆ 回到顶部](#-zinos-chat---ai-互动教育系统)
+[⬆ Back to top](#-ChatSpecies---ai-interative educational system)
 
 </div>

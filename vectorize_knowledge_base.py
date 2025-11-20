@@ -1,15 +1,15 @@
 """
-RAG 向量化脚本 - Qwen 全家桶版本
-将 Zino's Petrel 文献库向量化并存储到 ChromaDB
+RAG Vectorization Script - Qwen Full Suite Version
+Vectorizes the Zino's Petrel literature library and stores it in ChromaDB
 
-使用方法:
+Usage:
     python vectorize_knowledge_base.py
 
-功能:
-    - 批量处理 PDF 文件
-    - 优化的文档分割（chunk_overlap=200）
+Features:
+    - Batch processes PDF files
+    - Optimized document splitting (chunk_overlap=200)
     - Qwen Embedding (text-embedding-v3)
-    - 进度追踪和错误处理
+    - Progress tracking and error handling
 """
 
 import os
@@ -22,38 +22,38 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import DashScopeEmbeddings
 from langchain_chroma import Chroma
 
-# 加载环境变量
+# Load environment variables
 load_dotenv()
 
-# 配置
+# Configuration
 PDF_FOLDER = "Mediterranean Monk Seal"
 VECTOR_DB_PATH = "db6_qwen"
 CHUNK_SIZE = 1000
-CHUNK_OVERLAP = 200  # 20% 重叠，保持上下文连续性
-# 从环境变量读取 Embedding 模型（与 rag_utils.py 保持一致）
+CHUNK_OVERLAP = 200  # 20% overlap, maintains context continuity
+# Read Embedding model from environment variables (consistent with rag_utils.py)
 EMBEDDING_MODEL = os.getenv("QWEN_EMBEDDING_MODEL", "text-embedding-v3")
 
 def get_pdf_files(folder_path):
-    """获取文件夹中所有 PDF 文件"""
+    """Get all PDF files in the folder"""
     pdf_path = Path(folder_path)
     if not pdf_path.exists():
-        print(f"❌ 错误: 文件夹 '{folder_path}' 不存在")
+        print(f"❌ Error: Folder '{folder_path}' does not exist")
         sys.exit(1)
     
     pdf_files = list(pdf_path.glob("*.pdf"))
     if not pdf_files:
-        print(f"⚠️  警告: 文件夹 '{folder_path}' 中没有 PDF 文件")
+        print(f"⚠️  Warning: No PDF files found in folder '{folder_path}'")
         sys.exit(1)
     
     return pdf_files
 
 def load_and_split_pdf(pdf_path, text_splitter):
-    """加载并分割单个 PDF 文件"""
+    """Load and split a single PDF file"""
     try:
         loader = PyPDFLoader(str(pdf_path))
         pages = loader.load()
         
-        # 为每个文档添加元数据
+        # Add metadata to each document
         for i, page in enumerate(pages):
             page.metadata.update({
                 "source_file": pdf_path.name,
@@ -61,7 +61,7 @@ def load_and_split_pdf(pdf_path, text_splitter):
                 "total_pages": len(pages)
             })
         
-        # 分割文档
+        # Split documents
         chunks = text_splitter.split_documents(pages)
         return chunks, None
     
@@ -69,58 +69,58 @@ def load_and_split_pdf(pdf_path, text_splitter):
         return None, str(e)
 
 def vectorize_documents(pdf_files, embeddings, text_splitter):
-    """向量化所有文档"""
+    """Vectorize all documents"""
     all_chunks = []
     failed_files = []
     
-    print(f"\n📚 开始处理 {len(pdf_files)} 个 PDF 文件...\n")
+    print(f"\n📚 Starting to process {len(pdf_files)} PDF files...\n")
     
-    # 使用 tqdm 显示进度
-    for pdf_file in tqdm(pdf_files, desc="处理 PDF", unit="文件"):
+    # Use tqdm to show progress
+    for pdf_file in tqdm(pdf_files, desc="Processing PDF", unit="file"):
         chunks, error = load_and_split_pdf(pdf_file, text_splitter)
         
         if error:
             failed_files.append((pdf_file.name, error))
-            tqdm.write(f"❌ 失败: {pdf_file.name} - {error}")
+            tqdm.write(f"❌ Failed: {pdf_file.name} - {error}")
         else:
             all_chunks.extend(chunks)
-            tqdm.write(f"✅ 成功: {pdf_file.name} ({len(chunks)} chunks)")
+            tqdm.write(f"✅ Success: {pdf_file.name} ({len(chunks)} chunks)")
     
-    print(f"\n📊 统计:")
-    print(f"  - 成功: {len(pdf_files) - len(failed_files)} 个文件")
-    print(f"  - 失败: {len(failed_files)} 个文件")
-    print(f"  - 总块数: {len(all_chunks)} chunks")
+    print(f"\n📊 Statistics:")
+    print(f"  - Successful: {len(pdf_files) - len(failed_files)} files")
+    print(f"  - Failed: {len(failed_files)} files")
+    print(f"  - Total chunks: {len(all_chunks)} chunks")
     
     if failed_files:
-        print(f"\n⚠️  失败文件列表:")
+        print(f"\n⚠️  Failed files list:")
         for filename, error in failed_files:
             print(f"  - {filename}: {error}")
     
     return all_chunks
 
 def create_vector_store(chunks, embeddings, persist_directory):
-    """创建并持久化向量数据库"""
-    print(f"\n🔄 创建向量数据库...")
-    print(f"  - 向量库路径: {persist_directory}")
-    print(f"  - 嵌入模型: {EMBEDDING_MODEL}")
-    print(f"  - 文档块数量: {len(chunks)}")
+    """Create and persist vector database"""
+    print(f"\n🔄 Creating vector database...")
+    print(f"  - Vector store path: {persist_directory}")
+    print(f"  - Embedding model: {EMBEDDING_MODEL}")
+    print(f"  - Document chunk count: {len(chunks)}")
     
     try:
-        # 清空旧数据库（如果存在）
+        # Clear old database (if exists)
         if Path(persist_directory).exists():
             import shutil
             shutil.rmtree(persist_directory)
-            print(f"  - 已清空旧数据库")
+            print(f"  - Cleared old database")
         
-        # 分批处理向量化（DashScope 限制：batch_size ≤ 10）
+        # Batch process vectorization (DashScope limit: batch_size ≤ 10)
         batch_size = 10
         vectordb = None
         
-        for i in tqdm(range(0, len(chunks), batch_size), desc="向量化", unit="批次"):
+        for i in tqdm(range(0, len(chunks), batch_size), desc="Vectorizing", unit="batch"):
             batch = chunks[i:i + batch_size]
             
             if vectordb is None:
-                # 首次创建
+                # First time creation
                 vectordb = Chroma.from_documents(
                     documents=batch,
                     embedding=embeddings,
@@ -128,21 +128,21 @@ def create_vector_store(chunks, embeddings, persist_directory):
                     collection_name="zinos_petrel_knowledge"
                 )
             else:
-                # 追加到现有数据库
+                # Add to existing database
                 vectordb.add_documents(batch)
         
-        print(f"\n✅ 向量数据库创建成功!")
+        print(f"\n✅ Vector database created successfully!")
         return vectordb
     
     except Exception as e:
-        print(f"\n❌ 向量数据库创建失败: {str(e)}")
+        print(f"\n❌ Vector database creation failed: {str(e)}")
         import traceback
         traceback.print_exc()
         sys.exit(1)
 
 def test_retrieval(vectordb):
-    """测试检索功能"""
-    print(f"\n🧪 测试检索功能...")
+    """Test retrieval functionality"""
+    print(f"\n🧪 Testing retrieval functionality...")
     
     test_queries = [
         "What is Zino's Petrel?",
@@ -151,69 +151,69 @@ def test_retrieval(vectordb):
     ]
     
     for query in test_queries:
-        print(f"\n📝 查询: '{query}'")
+        print(f"\n📝 Query: '{query}'")
         results = vectordb.similarity_search(query, k=2)
         
         for i, doc in enumerate(results, 1):
-            print(f"\n  结果 {i}:")
-            print(f"    - 来源: {doc.metadata.get('source_file', 'Unknown')}")
-            print(f"    - 页码: {doc.metadata.get('page', 'N/A')}")
-            print(f"    - 内容预览: {doc.page_content[:150]}...")
+            print(f"\n  Result {i}:")
+            print(f"    - Source: {doc.metadata.get('source_file', 'Unknown')}")
+            print(f"    - Page: {doc.metadata.get('page', 'N/A')}")
+            print(f"    - Content preview: {doc.page_content[:150]}...")
 
 def main():
-    """主函数"""
+    """Main function"""
     print("=" * 60)
-    print("📚 RAG 向量化脚本 - Qwen 全家桶版本")
+    print("📚 RAG Vectorization Script - Qwen Full Suite Version")
     print("=" * 60)
     
-    # 1. 检查 API Key
+    # 1. Check API Key
     api_key = os.getenv("DASHSCOPE_API_KEY")
     if not api_key:
-        print("❌ 错误: 未找到 DASHSCOPE_API_KEY")
-        print("请在 .env 文件中配置 API Key")
+        print("❌ Error: DASHSCOPE_API_KEY not found")
+        print("Please configure API Key in .env file")
         sys.exit(1)
     
-    print(f"✅ API Key 已配置")
+    print(f"✅ API Key configured")
     
-    # 2. 获取 PDF 文件列表
+    # 2. Get PDF file list
     pdf_files = get_pdf_files(PDF_FOLDER)
-    print(f"✅ 找到 {len(pdf_files)} 个 PDF 文件")
+    print(f"✅ Found {len(pdf_files)} PDF files")
     
-    # 3. 初始化 Embeddings
-    print(f"\n🔧 初始化 Embedding 模型...")
+    # 3. Initialize Embeddings
+    print(f"\n🔧 Initializing Embedding model...")
     embeddings = DashScopeEmbeddings(
         model=EMBEDDING_MODEL,
         dashscope_api_key=api_key
     )
-    print(f"✅ 使用模型: {EMBEDDING_MODEL}")
+    print(f"✅ Using model: {EMBEDDING_MODEL}")
     
-    # 4. 初始化文本分割器
+    # 4. Initialize text splitter
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=CHUNK_SIZE,
         chunk_overlap=CHUNK_OVERLAP,
         separators=["\n\n", "\n", ". ", " ", ""]
     )
-    print(f"✅ 文本分割配置: chunk_size={CHUNK_SIZE}, overlap={CHUNK_OVERLAP}")
+    print(f"✅ Text splitting configuration: chunk_size={CHUNK_SIZE}, overlap={CHUNK_OVERLAP}")
     
-    # 5. 向量化文档
+    # 5. Vectorize documents
     chunks = vectorize_documents(pdf_files, embeddings, text_splitter)
     
     if not chunks:
-        print("❌ 没有成功处理任何文档")
+        print("❌ No documents processed successfully")
         sys.exit(1)
     
-    # 6. 创建向量数据库
+    # 6. Create vector database
     vectordb = create_vector_store(chunks, embeddings, VECTOR_DB_PATH)
     
-    # 7. 测试检索
+    # 7. Test retrieval
     test_retrieval(vectordb)
     
     print("\n" + "=" * 60)
-    print("🎉 向量化完成!")
+    print("🎉 Vectorization completed!")
     print("=" * 60)
-    print(f"\n📁 向量库位置: {VECTOR_DB_PATH}")
-    print(f"📊 总文档块数: {len(chunks)}")
-    print(f"\n下一步: 运行 'streamlit run main.py' 开始使用!")
+    print(f"\n📁 Vector store location: {VECTOR_DB_PATH}")
+    print(f"📊 Total document chunks: {len(chunks)}")
+    print(f"\nNext step: Run 'streamlit run main.py' to start using!")
 
 if __name__ == "__main__":
     main()
