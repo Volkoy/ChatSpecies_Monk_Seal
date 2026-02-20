@@ -14,36 +14,14 @@ def get_friendly_filename(source_file):
     Convert technical source file names to user-friendly names
     """
     filename_mapping = {
-        # Your Excel mappings
-    '37_3_Adamantopoulou.pdf': 'Adamantopoulou et al 2011 - Movements of Mediterranean Monk Seals Monachus monachus in the Eastern Mediterranean Sea',
-    'f0da61e8b1bd28b4546f409830e6ddd18257.pdf': 'Simopoulos et al 2013 - Social values of biodiversity conservation for Mediterranean monk seal Monachus monachus',
-    'E-AC33-45-04.pdf': 'CITES Animals Committee 2024 - Periodic Review of Monachus tropicalis',
-    '278-282-Vol19No2Erdem.pdf': 'Danyer et al 2013 - Preliminary report of a stranding case of Mediterranean Monk Seal Monachus monachus on Antalya coast Turkey',
-    'Cave_habitats_used_by_Mediterranean_monk.pdf': 'Bundone 2010 - Cave habitats used by Mediterranean monk seals Monachus monachus in Sardinia',
-    'the-mediterranean-monk-seal.pdf': 'Van Wijngaarden 1962 - The Mediterranean Monk Seal',
-    'a-brief-note-on-mediterranean-monk-seal.pdf': 'Zareei 2021 - A Brief Note on Mediterranean Monk Seal',
-    's41598-020-79712-1.pdf': 'Karamanlidis et al 2021 - Genetic and demographic history define a conservation strategy for earths most endangered pinniped the Mediterranean monk seal Monachus monachus',
-    '2020 A Mediterranean Monk Seal Pup on the Apulian Coast (Southern Italy) Sign of an Ongoing Recolonisation.pdf': 'Fioravanti et al 2020 - A Mediterranean Monk Seal Pup on the Apulian Coast Southern Italy Sign of an Ongoing Recolonisation',
-    'reestablishment_of_the_mediterranean_monk_seal_monachus_monachus_in_cyprus_priorities_for_conservation.pdf': 'Nicolaou et al 2021 - Re-establishment of the Mediterranean monk seal Monachus monachus in Cyprus priorities for conservation',
-    'MA2379_lit180815.pdf': 'Mo et al 2004 - Habitat suitability and sightings of the Mediterranean monk seal in the National Park of Al Hoceima Morocco',
-    'a4-flyer_270x194_marine-lifemonk-seal_eng_final.pdf': 'PPNEA undated - Mediterranean Monk Seal conservation flyer',
-    '2013_Karamanlidisetal..pdf': 'Karamanlidis et al 2013 - Demographic Structure and Social Behavior of the Unique Mediterranean monk seal Monachus monachus colony of the Island of Gyaros',
-    'Ilaria_Gradella.pdf': 'Gradella 2024 - The Mediterranean Monk Seal Monachus monachus Distribution Stranding and Major Threats',
-    'mededelingen39_2008b.pdf': 'Johnson 2004 - Monk Seals in Post-Classical History Biography of the Mediterranean Monk Seal',
-    '37_3_Adamantopoulou.pdf': 'Adamantopoulou et al 2010 - Movements of Mediterranean Monk Seals Monachus monachus in the Eastern Mediterranean Sea',
-    'n045p315.pdf': 'Fernandez de Larrinoa et al 2021 - Age specific survival and reproductive rates of Mediterranean monk seals at the Cabo Blanco Peninsula West Africa',
-    'AM-39.1-Alfaghi.pdf': 'Alfaghi et al 2013 - First Confirmed Sighting of the Mediterranean Monk Seal Monachus monachus in Libya Since 1972',
-    'n053p341.pdf': 'Karamanlidis et al 2024 - Current status biology threats and conservation priorities of the Vulnerable Mediterranean monk seal',
-    '44219.pdf': 'Bundone et al 2024 - Monitoring the Mediterranean monk seal in the central Mediterranean Sea',
-    'guide.pdf': 'Johnson et al 1998 - The Mediterranean Monk Seal Conservation Guidelines',
-    'the-mediterranean-monk-seal-karamanlidis-et-al-2015.pdf': 'Karamanlidis et al 2015 - The Mediterranean monk seal Monachus monachus status biology threats and conservation priorities',
-    'strategie_phoque_en.pdf': 'UNEP-MAP SPA-RAC 2019 - Regional Strategy for the Conservation of Monk Seal in the Mediterranean',
-    '2025-006-En.pdf': 'Quintana Martin-Montalvo et al 2025 - Mediterranean monk seal Monachus monachus A comprehensive set of monitoring and research techniques',
-    'BDJ_article_120201.pdf': 'Valsecchi et al 2024 - An Observatory to monitor range extension of the Mediterranean monk seal based on its eDNA traces',
-    'noaa_66431_DS1.pdf': 'Parsons 2024 - Mediterranean monk seal Monachus monachus 5 Year Review Summary and Evaluation',
-        
+        "Freitas_2002_MamiferosMarinhosMadeira.pdf": "Freitas et al. 2002 — Mamíferos Marinhos do Mar do Arquipélago da Madeira",
+        "IFNC_IPRAM_2023_LoboMarinho.pdf": "IFNC / IP-RAM 2023 — Lobo-marinho (Madeira) information sheet",
+        "Pires_2011_LobosMarinhosMadeira.pdf": "Rosa Pires 2011 — Lobos-Marinhos do Arquipélago da Madeira",
+        "Neves_1999_LoboMarinhoMadeira.pdf": "Costa Neves & Rosa Pires 1999 — O Lobo Marinho no Arquipélago da Madeira",
+        "Karamanlidis_2023_MonachusMonachus_IUCN.pdf": "IUCN 2023 — Monachus monachus (Mediterranean monk seal) Red List assessment (Karamanlidis et al.)",
+
         # Default fallback
-        'unknown': 'Unknown Document'
+        "unknown": "Unknown Document"
     }
     
     base_name = os.path.basename(source_file) if source_file else 'unknown'
@@ -69,8 +47,21 @@ def summarize_fact_check(question, retrieved_docs, ai_answer, language="English"
     
     for i, doc in enumerate(retrieved_docs[:3], 1):  # Use a maximum of 3 documents
         content = doc.page_content[:500]  # Each document is limited to 500 characters.
-        source = doc.metadata.get('source_file', 'Unknown')
-        page = doc.metadata.get('page', 'N/A')
+        meta = doc.metadata or {}
+        source = (
+            meta.get("source_file")
+            or meta.get("file_name")
+            or meta.get("filename")
+            or meta.get("source")          # sometimes LangChain uses this
+            or meta.get("path")            # sometimes the full path
+            or "unknown"
+        )
+
+        # If it's a full path, keep only the basename
+        source = os.path.basename(source)
+
+        page = meta.get("page") or meta.get("page_number") or meta.get("loc", "N/A")
+
 
         friendly_name = get_friendly_filename(source)
         
